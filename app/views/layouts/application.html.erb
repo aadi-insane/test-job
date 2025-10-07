@@ -1,16 +1,104 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>TestJob</title>
+    <title>Flipkart</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <style>
+      @media (min-width: 1025px) {
+      .h-custom {
+      height: 100vh !important;
+      }
+      }
+
+      .horizontal-timeline .items {
+      border-top: 2px solid #ddd;
+      }
+
+      .horizontal-timeline .items .items-list {
+      position: relative;
+      margin-right: 0;
+      }
+
+      .horizontal-timeline .items .items-list:before {
+      content: "";
+      position: absolute;
+      height: 8px;
+      width: 8px;
+      border-radius: 50%;
+      background-color: #ddd;
+      top: 0;
+      margin-top: -5px;
+      }
+
+      .horizontal-timeline .items .items-list {
+      padding-top: 15px;
+      }
+
+      #btn-back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none;
+      }
+    </style>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="d-flex flex-column min-vh-100">
+    <%= render 'partials/navbar' %>
+
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1000;">
+      <div id="notice-toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+        <div class="toast-header">
+          <strong class="me-auto">Notification</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <%= notice %>
+        </div>
+      </div>
+
+      <div id="alert-toast" class="toast align-items-center text-white bg-danger border-0 m-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <%= alert %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+    
+    <main class="container" style="margin-top: 6%;">
+      <%= yield %>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const noticeToastEl = document.getElementById("notice-toast");
+        const alertToastEl = document.getElementById("alert-toast");
+
+        if (noticeToastEl && noticeToastEl.querySelector('.toast-body').innerText.trim() !== '') {
+          const noticeToast = new bootstrap.Toast(noticeToastEl);
+          noticeToast.show();
+        }
+
+        if (alertToastEl && alertToastEl.querySelector('.toast-body').innerText.trim() !== '') {
+          const alertToast = new bootstrap.Toast(alertToastEl);
+          alertToast.show();
+        }
+      });
+
+      
+    </script>
   </body>
 </html>

@@ -3,7 +3,7 @@
       before_action :authenticate_admin! # Or a similar authorization check
 
       def index
-        @users = User.all.order(:id)
+        @users = User.order(:id).page(params[:page]).per(10)
       end
 
       private

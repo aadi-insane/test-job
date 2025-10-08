@@ -1,33 +1,43 @@
-<h1 class="mb-4">All Projects</h1>
+<% if current_user.manager? %>
+  <h1 class="mb-4"><u>My Projects</u></h1>
+<% else %>
+  <h1 class="mb-4"><u>All Projects</u></h1>
+<% end %>
 
-<div class="mb-3">
-  <%= link_to "Add New Project", new_project_path, class: "btn btn-success" %>
-</div>
+<% unless current_user.contributor? %>
+  <div class="mb-3">
+    <%= link_to "Add New Project", new_project_path, class: "btn btn-success" %>
+  </div>
+<% end %>
 
 <table class="table table-hover table-bordered">
   <thead class="table-primary">
     <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Title</th>
-      <th scope="col">Manager</th>
-      <th scope="col">Status</th>
-      <th scope="col" colspan="2">Actions</th>
+      <th scope="col" class="text-center">ID</th>
+      <th scope="col" class="text-center">Title</th>
+      <th scope="col" class="text-center">Manager</th>
+      <th scope="col" class="text-center">Status</th>
+      <th scope="col" class="text-center" colspan="2">Actions</th>
     </tr>
   </thead>
 
   <tbody>
-    <% @projects.find_each do |project| %>
+    <% @projects.each do |project| %>
       <tr>
-        <th scope="row"><%= project.id %></th>
-        <td><%= project.title %></td>
+        <th scope="row" class="text-center"><%= project.id %></th>
+        <td  class="text-center"><%= project.title %></td>
 
-        <td><%= project.manager.try(:name) || "N/A" %></td>
+        <td class="text-center"><%= project.manager.try(:name) || "N/A" %></td>
 
-        <td><%= project.status.capitalize %></td>
+        <td class="text-center"><%= project.status.capitalize %></td>
 
-        <td><%= link_to "Show", project_path(project), class: "btn btn-sm btn-info" %></td>
-        <td><%= link_to "Edit", edit_project_path(project), class: "btn btn-sm btn-warning" %></td>
+        <td class="text-center"><%= link_to "Show", project_path(project), class: "btn btn-sm btn-info" %></td>
+        <td class="text-center"><%= link_to "Edit", edit_project_path(project), class: "btn btn-sm btn-warning" %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
+<div class="d-flex justify-content-center">
+  <%= paginate @projects, theme: 'bootstrap4' %>
+
+</div>

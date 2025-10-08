@@ -1,9 +1,7 @@
-<h1 class="mb-4">Project Details</h1>
-<hr>
+<h1 class="mb-4"><u>Project : <%= @project.title %></u></h1>
 
-<div class="card shadow-sm">
+<div class="card shadow-sm w-50 align-items-center m-auto border border-primary" style="border-radius: 20px;">
   <div class="card-body">
-    <h3 class="card-title mb-3"><%= @project.title %></h3>
 
     <p class="card-text">
       <strong>Description:</strong><br>
@@ -36,13 +34,18 @@
     </p>
 
     <div class="mt-4 d-flex flex-wrap gap-2">
-      <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-warning" %>
+      <% if current_user.admin? %>
+        <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-warning" %>
 
-      <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"> Delete Project </button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"> Delete Project </button>
+      <% end %>
+      <% if current_user.manager? %>
+        <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-warning" %>
+      <% end %>
 
-      <%= link_to "Project's Tasks", project_tasks_path(@project), class: "btn btn-info text-white" %>
+        <%= link_to "Project's Tasks", project_tasks_path(@project), class: "btn btn-primary text-white" %>
 
-      <%= link_to "Back to Projects", projects_path, class: "btn btn-secondary" %>
+        <%= link_to "Back to Projects", projects_path, class: "btn btn-secondary" %>
     </div>
   </div>
 </div>

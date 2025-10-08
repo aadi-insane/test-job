@@ -1,4 +1,10 @@
-<h1 class="mb-4">Tasks</h1>
+<h1 class="mb-4"><u><%= @project.title %> : Tasks</u></h1>
+
+<% unless current_user.contributor? %>
+    <div class="mb-3">
+        <%= link_to "Add New Task", new_project_task_path(@project), class: "btn btn-success" %>
+    </div>
+<% end %>
 
 <% if @tasks.blank? %>
     <h3 class="text-center">No Tasks Assigned to this Project!</h3>
@@ -7,32 +13,43 @@
     <table class="table table-hover table-bordered">
     <thead class="table-primary">
         <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Title</th>
-        <th scope="col">Project</th>
-        <th scope="col">Status</th>
-        <th scope="col" colspan="3">Actions</th>
+        <th scope="col" class="text-center">ID</th>
+        <th scope="col" class="text-center">Title</th>
+        <th scope="col" class="text-center">Project</th>
+        <th scope="col" class="text-center">Status</th>
+        <% if current_user.manager? %>
+            <th scope="col" class="text-center">Assignee</th>
+        <% end %>
+        <th scope="col" colspan="3" class="text-center">Actions</th>
         </tr>
     </thead>
         
         <tbody>
-            <% @tasks.find_each do |task| %>
+            <% @tasks.each do |task| %>
             <tr>
-                <th scope="row"><%= task.id %></th>
-                <td><%= task.title %></td>
+                <th scope="row" class="text-center"><%= task.id %></th>
+                <td class="text-center"><%= task.title %></td>
 
-                <td><%= task.project.try(:title) || "N/A" %></td>
+                <td class="text-center"><%= task.project.try(:title) || "N/A" %></td>
 
-                <td><%= task.status.humanize %></td>
+                <td class="text-center"><%= task.status.humanize %></td>
 
-                <td><%= link_to "Show", "#", class: "btn btn-sm btn-info" %></td>
-                <td><%= link_to "Edit", "#", class: "btn btn-sm btn-warning" %></td>
-                <td>
-                <%= button_to "Delete", "#", method: :delete, data: { confirm: "Are you sure?" },
+                <% if current_user.manager? %>
+                    <%# <td><%= task.contributor.try(:name) %></td>
+                    <td class="text-center"><%= @contributor.name %></td>
+                <% end %>
+
+                <td class="text-center"><%= link_to "Show", project_task_path(@project, task), class: "btn btn-sm btn-info" %></td>
+                <td class="text-center"><%= link_to "Edit", edit_project_task_path(@project, task), class: "btn btn-sm btn-warning" %></td>
+                <!-- <td>
+                    <%= button_to "Delete", project_task_path(@project, task), method: :delete, data: { confirm: "Are you sure?" },
                     class: "btn btn-sm btn-danger" %>
-                </td>
+                </td> -->
             </tr>
             <% end %>
         </tbody>
     </table>
 <% end %>
+<div class="d-flex justify-content-center">
+  <%= paginate @tasks, theme: 'bootstrap4' %>
+</div>

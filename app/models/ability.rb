@@ -29,21 +29,24 @@ class Ability
     # See the wiki for details:
     # https://github.com/CanCanCommunity/cancancan/blob/develop/docs/define_check_abilities.md
 
-     user ||= User.new # guest user
+    user ||= User.new # guest
 
-      if user.admin?
-        can :manage, :all
+    if user.admin?
+      can :manage, :all
 
-      elsif user.manager?
-        can [:read, :create, :update], Project, manager_id: user.id
+    elsif user.manager?
+      can [:read, :create, :update, :destroy], Project, manager_id: user.id
+      can [:read, :create, :update, :destroy], Task, :project => { :manager_id => user.id }
+      can :assign, Task
 
-        can [:read, :create], Task
+    elsif user.contributor?
+      # can :manage, Task, contributor_id: user.id
+      # can [:read, :update], Task, contributor_id: user.id
+      can [:read, :show], Project
+      can :manage, Task
 
-      elsif user.contributor?
-        can [:read, :update], Task, contributor_id: user.id
-
-      else
-        can :read, Project, public: true
-      end
+    else
+      can :read, Project, status: :active
+    end
   end
 end

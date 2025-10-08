@@ -69,3 +69,7 @@ end
 gem 'devise'
 gem 'devise-jwt'
 gem 'cancancan'
+gem 'byebug'
+gem "kaminari", "~> 1.2"
+gem "chartkick"
+gem 'groupdate'

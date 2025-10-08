@@ -1,3 +1,49 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<div class="container">
+    <% unless user_signed_in? %>
+    <div class="text-center">
+        <h1 class="display-5">Home#index</h1>
+        <p class="lead">Find me in app/views/home/index.html.erb</p>
+    </div>
+    <% end %>
 
+  <% if user_signed_in? && current_user.admin? %>
+
+    <div class="w-100">
+        <div class="card h-100">
+            <div class="card-header">Tasks by Assigmee</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+            <%= line_chart Task.group(:contributor_id).count, class: "h-100 w-100" %>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 align-items-center justify-content-center">
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Manager</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= pie_chart Project.group(:manager_id).count, class: "h-100 w-100" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Manager</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= column_chart Project.group(:manager_id).count, class: "h-100 w-100"  %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Created Day</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= line_chart Project.group_by_day(:created_at).count %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

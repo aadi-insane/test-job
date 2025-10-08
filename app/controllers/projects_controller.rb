@@ -4,12 +4,23 @@ class ProjectsController < ApplicationController
 
   def index
     if current_user.admin?
-     @projects = Project.includes(:manager).all
+      @projects = Project.includes(:manager, :tasks).all
     elsif current_user.manager?
-      @projects = Project.includes(:manager).where(manager_id: current_user.id)
+      @projects = Project.includes(:manager, :tasks).where(manager_id: current_user.id)
+    elsif current_user.contributor?
+      @projects = Project.includes(tasks: :user_as_contributor).where(users: {id: current_user.id})
     else
-      @projects = []
+      @project = Project.none
     end
+
+    @projects = @projects.where(status: params[:status]) if params[:status].present?
+    @projects = @projects.order(created_at: :desc).page(params[:page]).per(10)
+
+  end
+
+  def show
+    @project = Project.find(params[:id])
+    # render json: @project, include: [:manager, :tasks], status: :ok
   end
 
   def new
@@ -29,9 +40,22 @@ class ProjectsController < ApplicationController
     end
   end
 
-  def show
+  def edit
     @project = Project.find(params[:id])
   end
+
+  def update
+    if @project.update(project_params)
+      # render json: @project, status: :ok
+      flash[:notice] = "Task \"#{@project.title}\" Updated Successfully!"
+      redirect_to projects_path(@project)
+    else
+      flash.now[:alert] = @project.errors.full_messages
+      render :edit, status: :unprocessable_content
+      # render json: { errors: @project.errors.full_messages }, status: :unprocessable_content
+    end
+  end
+
 
   def destroy
     @project = Project.find(params[:id])
@@ -46,8 +70,7 @@ class ProjectsController < ApplicationController
   end
 
   private
-
-  def project_params
-    params.require(:project).permit(:title, :description)
-  end
+    def project_params
+      params.require(:project).permit(:title, :description)
+    end
 end

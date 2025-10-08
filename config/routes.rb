@@ -1,6 +1,5 @@
 # config/routes.rb
 Rails.application.routes.draw do
-  get 'home/index'
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -12,6 +11,7 @@ Rails.application.routes.draw do
   root "home#index"
 
   devise_for :users, controllers: { sessions: 'users/sessions', registrations: 'users/registrations' }
+
   namespace :admin do
     resources :users
   end
@@ -19,5 +19,7 @@ Rails.application.routes.draw do
   resources :projects do
     resources :tasks
   end
+
+  resources :tasks, only: [:index, :show]
   
 end

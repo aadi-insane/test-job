@@ -1,0 +1,58 @@
+<div class="w-75">
+  <%= form_with model: [@project, @task], class: "p-4 border rounded bg-light shadow-sm" do |form| %>
+  <%# <%= form_with url: project_tasks_url, class: "p-4 border rounded bg-light shadow-sm" do |form| %> 
+    
+    <% if @task.errors.any? %>
+      <div class="alert alert-danger">
+        <h4 class="alert-heading">Please fix the following errors:</h4>
+        <ul>
+          <% @task.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %> 
+
+    <% if current_user.admin? || current_user.manager? %>
+
+      <div class="mb-3">
+        <%= form.label :title, class: "form-label" %>
+        <%= form.text_field :title, class: "form-control", placeholder: "Task Title" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :description, class: "form-label" %>
+        <%= form.text_area :description, class: "form-control", rows: 5, placeholder: "Task Description" %>
+      </div>
+
+      <div>
+        <%= form.label :contributor_id, "Select a Assignee" %>
+        <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id)), {}, { class: "form-select" } %>
+      </div>
+    <% else %>
+
+      <div class="mb-3">
+        <%= form.label :title, class: "form-label" %>
+        <%= form.text_field :title, value: @task.title, readonly: true, class: "form-control text-muted" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :description, class: "form-label" %>
+        <%= form.text_area :description, value: @task.description, readonly: true, class: "form-control text-muted", rows: 5 %>
+      </div>
+      
+      <div>
+        <%= form.label :status, "Update Task Status" %>
+        <%# <%= form.select :status, options_for_select(['Not Started', 'In Progress', 'Completed' ]), {}, { class: "form-select" } %>
+        <%= form.select :status, Task.statuses.keys.map { |key| [key.split('_').join(' ').upcase, key] }, {}, { class: "form-select" } %>
+        <!-- https://stackoverflow.com/questions/47567790/getting-1-is-not-a-valid-status-after-giving-enum-datatype-in-model#:~:text=136-,1,not%20a%20valid%20)%20by%20enum -->
+      </div>
+    <% end %>
+
+    <div class="justify-content-center text-center align-items-center">
+      <%= form.submit "Submit", class: "btn btn-primary m-2" %>
+      <%= link_to "Back", :back, class: "btn btn-secondary m-2" %>
+    </div>
+
+  <% end %>
+</div>

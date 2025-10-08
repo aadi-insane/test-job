@@ -1,0 +1,86 @@
+<h1 class="mb-4"><u>Task : <%= @task.title %></u></h1>
+
+<div class="card shadow-sm w-50 align-items-center m-auto border border-primary" style="border-radius: 20px;">
+  <div class="card-body">
+      <p class="text-center"><u><%= @project.title %></u> </p>
+
+    <p class="card-text">
+      <strong>Description:</strong><br>
+      <% if @task.description.present? %>
+        <%= @task.description %>
+      <% else %>
+        <span class="text-muted">No description provided.</span>
+      <% end %>
+    </p>
+
+
+    <p class="card-text">
+      <strong>Manager:</strong>
+      <% if @project.manager %>
+        <%= @project.manager.name %>
+      <% else %>
+        <span class="text-muted">N/A</span>
+      <% end %>
+    </p>
+    
+    <p class="card-text">
+      <strong>Assignee ID & Name:</strong>
+      <% if @task.contributor_id %>
+        <%= @task.contributor_id %> , <%= @contributor.name %>
+      <% else %>
+        <span class="text-muted">N/A</span>
+      <% end %>
+    </p>
+
+    <p class="card-text">
+      <strong>Status:</strong>
+      <span class="badge bg-info text-dark">
+        <%= @task.status.humanize %>
+      </span>
+    </p>
+
+    <p class="card-text">
+      <strong>Start Date:</strong>
+      <%= @task.created_at.strftime('%d %B %Y') %>
+    </p>
+
+    <div class="mt-4 d-flex flex-wrap gap-2">
+      <%= link_to "Edit Task", edit_project_task_path(@project, @task), class: "btn btn-warning" %>
+
+      <% unless current_user.contributor? %>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"> Delete Task </button>
+      <% end %>
+
+      <%= link_to "Back to Project", projects_path(@project), class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to delete task"<%= @task.title %>"?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
+        <%= button_to project_task_path(@project, @task),
+              method: :delete,
+              class: "btn btn-danger" do %>
+          Yes, Delete
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

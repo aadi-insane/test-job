@@ -32,7 +32,13 @@
 
                 <td class="text-center"><%= task.project.try(:title) || "N/A" %></td>
 
-                <td class="text-center"><%= task.status.humanize %></td>
+                <% if task.status == 'not_started' %>
+                    <td class="text-center"><span class="badge bg-info text-dark"><%= task.status.split('_').join(' ').upcase %></span></td>
+                <% elsif task.status == 'in_progress' %>
+                    <td class="text-center"><span class="badge bg-success text-dark"><%= task.status.split('_').join(' ').upcase %></span></td>
+                <% else %>
+                    <td class="text-center"><span class="badge bg-warning text-dark"><%= task.status.split('_').join(' ').upcase %></span></td>
+                <% end %>
 
                 <% if current_user.manager? %>
                     <%# <td><%= task.contributor.try(:name) %></td>

@@ -33,6 +33,7 @@ class TasksController < ApplicationController
   def create
     # byebug
     @task = @project.tasks.build(task_params)
+    @task.status = 'not_started'
     
     if @task.save
       flash[:notice] = "Task \"#{@task.title}\" Created Successfully!"

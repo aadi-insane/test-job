@@ -43,9 +43,17 @@
       
       <div>
         <%= form.label :status, "Update Task Status" %>
-        <%# <%= form.select :status, options_for_select(['Not Started', 'In Progress', 'Completed' ]), {}, { class: "form-select" } %>
-        <%= form.select :status, Task.statuses.keys.map { |key| [key.split('_').join(' ').upcase, key] }, {}, { class: "form-select" } %>
-        <!-- https://stackoverflow.com/questions/47567790/getting-1-is-not-a-valid-status-after-giving-enum-datatype-in-model#:~:text=136-,1,not%20a%20valid%20)%20by%20enum -->
+
+        <!-- Get all AASM states as strings -->
+        <% allowed_statuses = Task.aasm.states.map(&:name).map(&:to_s) %>
+
+        <!-- If task is already completed, prevent status changes by limiting to 'completed' -->
+        <% allowed_statuses = ['completed'] if @task.status == 'completed' %>
+
+        <%= form.select :status,
+              allowed_statuses.map { |s| [s.humanize.upcase, s] },
+              {},
+              { class: "form-select" } %>
       </div>
     <% end %>
 

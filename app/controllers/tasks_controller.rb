@@ -1,7 +1,8 @@
 class TasksController < ApplicationController
   before_action :authenticate_user!
   load_and_authorize_resource :project
-  load_and_authorize_resource through: :project
+  load_and_authorize_resource :task, through: :project
+
 
   def index
     if current_user.contributor?
@@ -75,8 +76,36 @@ class TasksController < ApplicationController
     redirect_to project_tasks_path(@project)
   end
 
-  private
-    def task_params
-      params.require(:task).permit(:title, :description, :status, :project_id, :contributor_id)
+  def update_status
+    @task = Task.find(params[:id])
+    authorize! :update_status, @task
+
+    if @task.update(task_params)
+      # Respond with success
+      flash[:notice] = "Task status updated successfully!"
+      redirect_to project_task_path(@project, @task)
+    else
+      # Respond with error
+      flash.now[:alert] = @task.errors.full_messages
+      render :edit, status: :unprocessable_content
     end
+  end
+
+  def deactivate_project
+    @project = Project.find(params[:project_id])
+    authorize! :deactivate, @project
+
+    if @project.may_deactivate?
+      @project.deactivate!
+      render json: { message: 'Project deactivated' }, status: :ok
+    else
+      render json: { error: 'Invalid state transition' }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def task_params
+    params.require(:task).permit(:title, :description, :status, :project_id, :contributor_id)
+  end
 end

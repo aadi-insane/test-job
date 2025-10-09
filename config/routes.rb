@@ -17,7 +17,15 @@ Rails.application.routes.draw do
   end
 
   resources :projects do
-    resources :tasks
+    member do
+      patch :deactivate_project
+    end
+
+    resources :tasks do
+      member do
+        patch :update_status
+      end
+    end
   end
 
   resources :tasks, only: [:index, :show]

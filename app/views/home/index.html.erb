@@ -1,54 +1,131 @@
-<div class="container-fluid py-4" style="background-color: #f8f9fa; min-height: 100vh;">
-  <% unless user_signed_in? %>
-    <div class="text-center my-5">
-      <h1 class="display-4 fw-bold">Welcome</h1>
-      <p class="lead text-muted">Find me in <code>app/views/home/index.html.erb</code></p>
-    </div>
-  <% end %>
-
+<div class="container">
   <% if user_signed_in? && current_user.admin? %>
-    <div class="mb-4">
-      <h2 class="fw-bold text-dark text-center mb-3">Admin Dashboard</h2>
+
+    <div class="w-100">
+        <div class="card h-100">
+            <div class="card-header">Tasks by Assigmee</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+            <%= line_chart Task.group(:contributor_id).count, class: "h-100 w-100" %>
+            </div>
+        </div>
     </div>
 
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-white fw-semibold">Tasks by Assignee</div>
-          <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 300px;">
-            <%= line_chart Task.group(:contributor_id).count, class: "w-100 h-100" %>
+    <div class="row g-4 align-items-center justify-content-center">
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Manager</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= pie_chart Project.group(:manager_id).count, class: "h-100 w-100" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Manager</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= column_chart Project.group(:manager_id).count, class: "h-100 w-100"  %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-3">
+        <div class="card h-100">
+          <div class="card-header">Projects by Created Day</div>
+          <div class="card-body d-flex align-items-center justify-content-center">
+            <%= line_chart Project.group_by_day(:created_at).count %>
           </div>
         </div>
       </div>
     </div>
+  <% else %>
 
-    <div class="row g-4">
-      <div class="col-md-6 col-xl-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white fw-semibold">Projects by Manager (Pie)</div>
-          <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
-            <%= pie_chart Project.group(:manager_id).count, class: "w-100 h-100" %>
+    <div class="container" style="background-color: #bde1ff;">
+      <!-- Hero Section -->
+      <section id="home" class="text-center">
+        <h1 class="display-4"><u>You're using the Project Manager</u></h1>
+        <p class="lead">Please upgrade to access all features.</p>
+        <a href="#" class="btn btn-outline-primary">Purchase Now</a>
+      </section>
+
+      <!-- Features -->
+      <section id="features" class="py-5">
+        <div class="text-center mb-5">
+          <h2>Features</h2>
+        </div>
+        <div class="row text-center">
+          <div class="col-md-4 mb-4">
+            <h4>Bootstrap 5</h4>
+            <p>Modern responsive layout using Bootstrap 5.</p>
+          </div>
+          <div class="col-md-4 mb-4">
+            <h4>Clean Design</h4>
+            <p>Minimalist and modern layout that's easy to modify.</p>
+          </div>
+          <div class="col-md-4 mb-4">
+            <h4>Easy to Use</h4>
+            <p>Well-structured and developer-friendly components.</p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="col-md-6 col-xl-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white fw-semibold">Projects by Manager (Column)</div>
-          <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
-            <%= column_chart Project.group(:manager_id).count, class: "w-100 h-100" %>
+      <!-- About Section -->
+      <section id="about" class="py-5 bg-light">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4">
+            <%= image_tag "about-1.png", class: "img-fluid", alt: "About Us" %>
+          </div>
+          <div class="col-lg-6">
+            <h2>Perfect Solution for Your Business</h2>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+            <a href="#" class="btn btn-outline-secondary">Discover More</a>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="col-md-6 col-xl-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white fw-semibold">Projects by Created Day</div>
-          <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 250px;">
-            <%= line_chart Project.group_by_day(:created_at).count, class: "w-100 h-100" %>
+      <!-- Why Choose Us -->
+      <section id="why" class="py-5">
+        <div class="text-center mb-5">
+          <h2>Why Choose Us</h2>
+          <p class="text-muted">Benefits of using our solution</p>
+        </div>
+        <div class="row text-center">
+          <div class="col-md-4 mb-4">
+            <h5>SaaS Focused</h5>
+            <p>Designed specifically for SaaS applications.</p>
+          </div>
+          <div class="col-md-4 mb-4">
+            <h5>Simple Design</h5>
+            <p>Get started quickly with minimal setup.</p>
+          </div>
+          <div class="col-md-4 mb-4">
+            <h5>Optimized</h5>
+            <p>Performance-focused HTML/CSS structure.</p>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Newsletter Section -->
+      <section id="contact" class="py-5 bg-light">
+        <div class="row align-items-center">
+          <div class="col-md-6 mb-4 px-5">
+            <h3>Subscribe to Our Newsletter</h3>
+            <p>Stay updated with the latest news and offers.</p>
+          </div>
+          <div class="col-md-6">
+            <form class="row g-2">
+              <div class="col-auto">
+                <input type="email" class="form-control" placeholder="Enter your email">
+              </div>
+              <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
     </div>
   <% end %>
 </div>

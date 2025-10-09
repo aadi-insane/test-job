@@ -24,34 +24,42 @@ class Task < ApplicationRecord
   end
 
   private
+    # def check_project_completion
+    #   if project.tasks.where.not(status: "completed").none?
+    #     project.update(status: "completed")
+    #   end
+    # end
 
-  def check_project_completion
-    if project.tasks.where.not(status: "completed").none?
-      project.update(status: "completed")
+    def check_project_completion
+      if project.tasks.where.not(status: 'completed').none? && project.may_complete?
+        project.complete!
+        project.deactivate! if project.may_deactivate?
+      end
     end
-  end
 
-  def valid_status_transition
-    return unless status_changed?
 
-    from = status_was&.to_sym
-    to = status&.to_sym
 
-    case [from, to]
-    when [:not_started, :in_progress]
-      true
-    when [:not_started, :completed]
-      true
-    when [:in_progress, :completed]
-      true
-    when [:in_progress, :in_progress] # no change
-      true
-    when [:not_started, :not_started]
-      true
-    when [:completed, :completed]
-      true
-    else
-      errors.add(:status, "transition from #{from} to #{to} is not allowed")
+    def valid_status_transition
+      return unless status_changed?
+
+      from = status_was&.to_sym
+      to = status&.to_sym
+
+      case [from, to]
+      when [:not_started, :in_progress]
+        true
+      when [:not_started, :completed]
+        true
+      when [:in_progress, :completed]
+        true
+      when [:in_progress, :in_progress]
+        true
+      when [:not_started, :not_started]
+        true
+      when [:completed, :completed]
+        true
+      else
+        errors.add(:status, "transition from #{from} to #{to} is not allowed")
+      end
     end
-  end
 end

@@ -2,6 +2,7 @@
   <%= form_with model: [@project, @task], class: "p-4 border rounded bg-light shadow-sm" do |form| %>
   <%# <%= form_with url: project_tasks_url, class: "p-4 border rounded bg-light shadow-sm" do |form| %> 
     
+    <!-- 
     <% if @task.errors.any? %>
       <div class="alert alert-danger">
         <h4 class="alert-heading">Please fix the following errors:</h4>
@@ -12,6 +13,7 @@
         </ul>
       </div>
     <% end %> 
+    -->
 
     <% if current_user.admin? || current_user.manager? %>
 

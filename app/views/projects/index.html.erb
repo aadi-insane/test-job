@@ -1,4 +1,4 @@
-<% if current_user.manager? %>
+<% if current_user.manager? || current_user.contributor? %>
   <h1 class="mb-4"><u>My Projects</u></h1>
 <% else %>
   <h1 class="mb-4"><u>All Projects</u></h1>
@@ -10,33 +10,83 @@
   </div>
 <% end %>
 
-<table class="table table-hover table-bordered">
-  <thead class="table-primary">
-    <tr>
-      <th scope="col" class="text-center">ID</th>
-      <th scope="col" class="text-center">Title</th>
-      <th scope="col" class="text-center">Manager</th>
-      <th scope="col" class="text-center">Status</th>
-      <th scope="col" class="text-center" colspan="2">Actions</th>
-    </tr>
-  </thead>
+<% if @projects.blank? %>
+    <h3 class="text-center">You are yet to be assigned to any Task!</h3>
+<% else %>
 
-  <tbody>
-    <% @projects.each do |project| %>
-      <tr>
-        <th scope="row" class="text-center"><%= project.id %></th>
-        <td  class="text-center"><%= project.title %></td>
+  <% if current_user.admin? || current_user.manager? %>
 
-        <td class="text-center"><%= project.manager.try(:name) || "N/A" %></td>
+    <table class="table table-hover table-bordered">
+      <thead class="table-primary">
+        <tr>
+          <th scope="col" class="text-center">ID</th>
+          <th scope="col" class="text-center">Title</th>
+          <th scope="col" class="text-center">Manager</th>
+          <th scope="col" class="text-center">Status</th>
+          <th scope="col" class="text-center" colspan="2">Actions</th>
+        </tr>
+      </thead>
 
-        <td class="text-center"><%= project.status.capitalize %></td>
+      <tbody>
+        <% @projects.each do |project| %>
+          <tr>
+            <th scope="row" class="text-center"><%= project.id %></th>
+            <td  class="text-center"><%= project.title %></td>
 
-        <td class="text-center"><%= link_to "Show", project_path(project), class: "btn btn-sm btn-info" %></td>
-        <td class="text-center"><%= link_to "Edit", edit_project_path(project), class: "btn btn-sm btn-warning" %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+            <td class="text-center"><%= project.manager.try(:name) || "N/A" %></td>
+
+            <td class="text-center"><%= project.status.capitalize %></td>
+
+            <td class="text-center"><%= link_to "Show", project_path(project), class: "btn btn-sm btn-info" %></td>
+            <td class="text-center"><%= link_to "Edit", edit_project_path(project), class: "btn btn-sm btn-warning" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+  
+  <% else %>
+      <% @projects.each do |project| %>
+        <div class="mb-4">
+          <h4><%= project.title %></h4>
+          <p>
+            <strong>Manager:</strong> <%= project.manager.try(:name) || "N/A" %><br>
+            <strong>Status:</strong> <%= project.status.capitalize %>
+          </p>
+
+          <table class="table table-striped table-hover table-fixed-width">
+            <colgroup>
+              <col style="width: 150px;">
+              <col style="width: 100px;">
+              <col style="width: 150px;">
+              <col style="width: 120px;">
+            </colgroup>
+            <thead class="table-danger">
+              <tr>
+                <th>Task Title</th>
+                <th>Status</th>
+                <th>Contributor</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% project.tasks.each do |task| %>
+                <tr>
+                  <td><%= task.title %></td>
+                  <td><%= task.status.capitalize %></td>
+                  <td><%= task.contributor_id %></td>
+                  <td>
+                    <%= link_to "Show Task", project_task_path(project, task), class: "btn btn-sm btn-primary" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+  <% end %>
+
+<% end %>
 <div class="d-flex justify-content-center">
   <%= paginate @projects, theme: 'bootstrap4' %>
 

@@ -134,7 +134,7 @@
     </style>
   </head>
 
-  <body class="d-flex flex-column min-vh-100">
+  <body class="d-flex flex-column min-vh-100" style="background-color: #bde1ff;">
     <%= render 'partials/navbar' %>
 
     <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1000;">
@@ -158,13 +158,15 @@
       </div>
     </div>
     
-    <main class="container" style="margin-top: 6%;">
-      <!-- <div class="text-center">
+    <main class="container" style="margin-top: 6%; margin-bottom: 50px;">
+      <div class="text-center">
         <p class="text-success"><%= notice %></p>
         <p class="text-danger"><%= alert %></p>
-      </div> -->
+      </div>
       <%= yield %>
     </main>
+
+    <%= render 'partials/footer' %>
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {

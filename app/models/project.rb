@@ -14,13 +14,16 @@ class Project < ApplicationRecord
     state :completed
 
     event :complete do
-      transitions from: [:active], to: :completed, after: :deactivate
+      transitions from: [:active], to: :completed
+    end
+
+    event :deactivate do
+      transitions from: [:active, :completed], to: :inactive
     end
   end
 
   private
-
-  def deactivate
-    update(status: "inactive")
-  end
+    def deactivate
+      update(status: "inactive")
+    end
 end

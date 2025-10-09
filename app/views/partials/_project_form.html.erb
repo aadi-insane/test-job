@@ -1,7 +1,8 @@
 <div class="w-75">
   <%= form_with model: @project, class: "p-4 border rounded bg-light shadow-sm" do |form| %>
     
-    <% if @project.errors.any? %>
+    <!--
+     <% if @project.errors.any? %>
       <div class="alert alert-danger">
         <h4 class="alert-heading">Please fix the following errors:</h4>
         <ul>
@@ -10,7 +11,8 @@
           <% end %>
         </ul>
       </div>
-    <% end %>
+    <% end %> 
+    -->
 
     <div class="mb-3">
       <%= form.label :title, class: "form-label" %>
@@ -20,6 +22,17 @@
     <div class="mb-3">
       <%= form.label :description, class: "form-label" %>
       <%= form.text_area :description, class: "form-control", rows: 5, placeholder: "Project Description" %>
+    </div>
+
+    <div>
+      <%= form.label :status, "Update Task Status" %>
+      <% allowed_statuses = Project.aasm.states.map(&:name).map(&:to_s) %>
+      <% allowed_statuses = ['completed'] if @project.status == 'completed' %>
+
+      <%= form.select :status,
+            allowed_statuses.map { |s| [s.humanize.upcase, s] },
+            {},
+            { class: "form-select" } %>
     </div>
 
     <div class="justify-content-center text-center align-items-center">

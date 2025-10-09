@@ -34,16 +34,31 @@ class Ability
     if user.admin?
       can :manage, :all
 
+    # elsif user.manager?
+    #   can [:read, :create, :update, :destroy], Project, manager_id: user.id
+    #   can [:read, :create, :update, :destroy], Task, :project => { :manager_id => user.id }
+    #   can :assign, Task
+    
     elsif user.manager?
-      can [:read, :create, :update, :destroy], Project, manager_id: user.id
-      can [:read, :create, :update, :destroy], Task, :project => { :manager_id => user.id }
-      can :assign, Task
+      can [:read, :create, :update], Project, manager_id: user.id
+      cannot :destroy, Project
+      can [:read, :create, :update, :destroy], Task, project: { manager_id: user.id }
+      can :assign, Task, project: { manager_id: user.id }
+      can :update_status, Task, project: { manager_id: user.id }
+
+    # elsif user.contributor?
+    #   # can :manage, Task, contributor_id: user.id
+    #   # can [:read, :update], Task, contributor_id: user.id
+    #   can [:read, :show], Project
+    #   can :manage, Task
 
     elsif user.contributor?
-      # can :manage, Task, contributor_id: user.id
-      # can [:read, :update], Task, contributor_id: user.id
-      can [:read, :show], Project
-      can :manage, Task
+      can :read, Project
+      can [:read, :update], Task
+      cannot [:create, :destroy], Project
+      cannot [:create, :destroy], Task
+      can :update_status, Task, contributor_id: user.id
+      # can :manage, all
 
     else
       can :read, Project, status: :active

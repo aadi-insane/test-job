@@ -30,6 +30,7 @@ class ProjectsController < ApplicationController
   def create
     @project = Project.new(project_params)
     @project.manager_id = current_user.id
+    @project.status = 'active'
 
     if @project.save
       flash[:notice] = "Project \"#{@project.title}\" created successfully!"
@@ -71,6 +72,6 @@ class ProjectsController < ApplicationController
 
   private
     def project_params
-      params.require(:project).permit(:title, :description)
+      params.require(:project).permit(:title, :description, :status)
     end
 end

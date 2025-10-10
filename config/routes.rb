@@ -29,5 +29,7 @@ Rails.application.routes.draw do
   end
 
   resources :tasks, only: [:index, :show]
+
+  get '/search', to: 'projects#search_project', as: :search_project
   
 end

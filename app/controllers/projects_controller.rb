@@ -70,6 +70,44 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def search_project
+    @query = params[:query].to_s.strip
+    @status = params[:status].to_s.strip
+
+    if @query.empty? && (@status.empty? || @status == "All Status")
+      flash[:alert] = "Please enter a search query or select a status."
+      redirect_to projects_path and return
+      # @results = Project.none.paginate(page: params[:page], per_page: 10)
+      # render :search_product and return
+    end
+
+    if user_signed_in? && current_user.manager?
+      @results = Project.where(manager_id: current_user.id)
+    elsif user_signed_in? && current_user.contributor?
+      @results = Project.includes(:tasks).where(tasks: {contributor_id: current_user.id})
+    else
+      @results = Project.all
+    end
+
+    # @results = @results.where("title ILIKE ?", "%#{@query}%") unless @query.empty?
+    @results = @results.where("projects.title ILIKE ?", "%#{@query}%") unless @query.empty?
+
+
+    unless @status.empty? || @status == "All Status"
+    @results = @results.where(status: @status)
+    end
+
+    @results = @results.page(params[:page]).per(10)
+
+    if @results.exists?
+      flash.now[:notice] = "'#{@results.total_count}' results found."
+    else
+      flash.now[:alert] = "No results found."
+    end
+
+    render :search_project
+  end
+
   private
     def project_params
       params.require(:project).permit(:title, :description, :status)

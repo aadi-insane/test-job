@@ -46,6 +46,8 @@ class Ability
       can :assign, Task, project: { manager_id: user.id }
       can :update_status, Task, project: { manager_id: user.id }
 
+      can :search_project, Project
+
     # elsif user.contributor?
     #   # can :manage, Task, contributor_id: user.id
     #   # can [:read, :update], Task, contributor_id: user.id
@@ -59,6 +61,8 @@ class Ability
       cannot [:create, :destroy], Task
       can :update_status, Task, contributor_id: user.id
       # can :manage, all
+
+      can :search_project, Project
 
     else
       can :read, Project, status: :active

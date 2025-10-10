@@ -11,6 +11,8 @@ class User < ApplicationRecord
 
   has_many :projects_as_manager, class_name: "Project", foreign_key: "manager_id"
 
+  validates_presence_of :role
+
   # before_create :ensure_jti
 
   # private

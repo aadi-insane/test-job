@@ -61,7 +61,6 @@ RSpec.describe "Projects", type: :request do
 
         expect(response).to redirect_to(project_path(Project.last))
         follow_redirect!
-        # expect(response.body).to include("Project \"#{project.title}\" created successfully!")
       end
     end
 
@@ -75,7 +74,6 @@ RSpec.describe "Projects", type: :request do
 
         expect(response).to redirect_to(project_path(Project.last))
         follow_redirect!
-        # expect(response.body).to include("Project was successfully created.")
       end
     end
 
@@ -89,7 +87,6 @@ RSpec.describe "Projects", type: :request do
 
         expect(response).to redirect_to(root_path)
         follow_redirect!
-        # expect(response.body).to include("Project was successfully created.")
       end
     end
   

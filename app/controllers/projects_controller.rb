@@ -4,11 +4,11 @@ class ProjectsController < ApplicationController
 
   def index
     if current_user.admin?
-      @projects = Project.includes(:manager, :tasks).all
+      @projects = Project.includes(:manager).all
     elsif current_user.manager?
-      @projects = Project.includes(:manager, :tasks).where(manager_id: current_user.id)
+      @projects = Project.includes(:manager).where(manager_id: current_user.id).order(created_at: :desc).limit(10).offset(0)
     elsif current_user.contributor?
-      @projects = Project.includes(tasks: :user_as_contributor).where(users: {id: current_user.id})
+      @projects = Project.includes(:manager, tasks: :user_as_contributor).where(tasks: { user_as_contributor: current_user }).distinct
     else
       @project = Project.none
     end
@@ -19,7 +19,7 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @project = Project.find(params[:id])
+    @project = Project.includes(:manager).find(params[:id])
     # render json: @project, include: [:manager, :tasks], status: :ok
   end
 
@@ -37,7 +37,7 @@ class ProjectsController < ApplicationController
       redirect_to project_path(@project)
     else
       flash.now[:alert] = @project.errors.full_messages.to_sentence
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -82,9 +82,9 @@ class ProjectsController < ApplicationController
     end
 
     if user_signed_in? && current_user.manager?
-      @results = Project.where(manager_id: current_user.id)
+      @results = Project.includes(:manager).where(manager_id: current_user.id)
     elsif user_signed_in? && current_user.contributor?
-      @results = Project.includes(:tasks).where(tasks: {contributor_id: current_user.id})
+      @results = Project.includes(:tasks, :manager).where(tasks: {contributor_id: current_user.id})
     else
       @results = Project.all
     end

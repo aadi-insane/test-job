@@ -41,8 +41,7 @@
                 <% end %>
 
                 <% if current_user.manager? %>
-                    <%# <td><%= task.contributor.try(:name) %></td>
-                    <td class="text-center"><%= @contributor.name %></td>
+                    <td><%= task.user_as_contributor.try(:name) %></td> 
                 <% end %>
 
                 <td class="text-center"><%= link_to "Show", project_task_path(@project, task), class: "btn btn-sm btn-info" %></td>

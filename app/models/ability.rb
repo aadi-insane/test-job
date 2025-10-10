@@ -55,7 +55,7 @@ class Ability
     #   can :manage, Task
 
     elsif user.contributor?
-      can :read, Project
+      can :read, Project, tasks: {contributor_id: user.id}
       can [:read, :update], Task
       cannot [:create, :destroy], Project
       cannot [:create, :destroy], Task

@@ -13,7 +13,11 @@
 </div>
 
 <% if @projects.blank? %>
+  <% if current_user.manager? || current_user.admin? %>
+    <h3 class="text-center">No Projects to Show!</h3>
+  <% else %>
     <h3 class="text-center">You are yet to be assigned to any Task!</h3>
+    <% end %>
 <% else %>
 
   <div class="flex-grow-1 m-3">
@@ -47,11 +51,8 @@
           <tr>
             <th scope="row" class="text-center"><%= project.id %></th>
             <td  class="text-center"><%= project.title %></td>
-
             <td class="text-center"><%= project.manager.try(:name) || "N/A" %></td>
-
             <td class="text-center"><%= project.status.capitalize %></td>
-
             <td class="text-center"><%= link_to "Show", project_path(project), class: "btn btn-sm btn-info" %></td>
             <td class="text-center"><%= link_to "Edit", edit_project_path(project), class: "btn btn-sm btn-warning" %></td>
           </tr>

@@ -77,3 +77,4 @@ gem "kaminari", "~> 1.2"
 gem "chartkick"
 gem 'groupdate'
 gem 'aasm'
+gem 'bullet'

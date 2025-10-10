@@ -27,10 +27,18 @@
         <%= form.text_area :description, class: "form-control", rows: 5, placeholder: "Task Description" %>
       </div>
 
-      <div>
-        <%= form.label :contributor_id, "Select a Assignee" %>
-        <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id)), {}, { class: "form-select" } %>
-      </div>
+      <% if @task.id %>
+        <div>
+          <%= form.label :contributor_id, "Select an Assignee" %>
+          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id), selected: @task.contributor_id ), {}, { class: "form-select" } %>
+        </div>
+      <% else %>
+        <div>
+          <%= form.label :contributor_id, "Select an Assignee" %>
+          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id)), {:prompt => 'Select a Contributor'}, { class: "form-select" } %>
+        </div>
+      <% end %>
+
     <% else %>
 
       <div class="mb-3">

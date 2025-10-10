@@ -7,13 +7,11 @@ class TasksController < ApplicationController
   def index
     if current_user.contributor?
       # @tasks = Task.includes(:user_as_contributor).where(users: {id: current_user.id})
-      @tasks = Task.where(contributor_id: current_user.id, project_id: params[:project_id])
-      # @projects = Project.includes(@tasks)
+      @tasks = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
       
     elsif current_user.manager?
       # byebug
-      @tasks = Task.includes(:project).where(projects: { id: params[:project_id], manager_id: current_user.id })
-      @contributor = User.find(@tasks.pluck(:contributor_id)).first
+      @tasks = Task.includes(:project, :user_as_contributor).where(projects: { id: params[:project_id], manager_id: current_user.id })
 
     else
       # @tasks = Task.none
@@ -35,20 +33,29 @@ class TasksController < ApplicationController
     # byebug
     @task = @project.tasks.build(task_params)
     @task.status = 'not_started'
-    
-    if @task.save
-      flash[:notice] = "Task \"#{@task.title}\" Created Successfully!"
-      redirect_to project_task_path(@project, @task)
-    else
-      flash.now[:alert] = @task.errors.full_messages
+
+    # contributor_ids_on_project = User.where(id: @project.tasks.where(status: 'completed').pluck(:contributor_id)).ids
+    contributor_ids_on_project = User.where(id: @project.tasks.pluck(:contributor_id)).ids
+
+    if contributor_ids_on_project.include?(@task.contributor_id)
+      flash.now[:alert] = "This Contributor is already assigned to this Project can't assign again!"
       render :new, status: :unprocessable_content
+    else
+      if @task.save
+        flash[:notice] = "Task \"#{@task.title}\" Created Successfully!"
+        redirect_to project_task_path(@project, @task)
+      else
+        flash.now[:alert] = @task.errors.full_messages
+        render :new, status: :unprocessable_content
+      end
     end
+    
   end
 
   def show
     @project = Project.find(params[:project_id])
-    @task = Task.find(params[:id])
-    @contributor = User.find(@task.contributor_id)
+    @task = Task.includes(:user_as_contributor).find(params[:id])
+    @contributor = @task.user_as_contributor
     # render json: @project, include: [:manager, :tasks], status: :ok
   end
 
@@ -99,7 +106,7 @@ class TasksController < ApplicationController
       @project.deactivate!
       render json: { message: 'Project deactivated' }, status: :ok
     else
-      render json: { error: 'Invalid state transition' }, status: :unprocessable_entity
+      render json: { error: 'Invalid state transition' }, status: :unprocessable_content
     end
   end
 

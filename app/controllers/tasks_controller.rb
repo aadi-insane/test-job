@@ -88,11 +88,9 @@ class TasksController < ApplicationController
     authorize! :update_status, @task
 
     if @task.update(task_params)
-      # Respond with success
       flash[:notice] = "Task status updated successfully!"
       redirect_to project_task_path(@project, @task)
     else
-      # Respond with error
       flash.now[:alert] = @task.errors.full_messages
       render :edit, status: :unprocessable_content
     end

@@ -7,20 +7,20 @@ class TasksController < ApplicationController
   def index
     if current_user.contributor?
       # @tasks = Task.includes(:user_as_contributor).where(users: {id: current_user.id})
-      @tasks = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
+      tasks = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
       
     elsif current_user.manager?
       # byebug
-      @tasks = Task.includes(:project, :user_as_contributor).where(projects: { id: params[:project_id], manager_id: current_user.id })
+      tasks = Task.includes(:project, :user_as_contributor).where(projects: { id: params[:project_id], manager_id: current_user.id })
 
     else
       # @tasks = Task.none
-      @tasks = Task.includes(:project).where(projects: {id: params[:project_id]})
+      tasks = Task.includes(:project).where(projects: { id: params[:project_id] })
     end
     # byebug
 
     # @tasks = @tasks.where(status: params[:status]) if params[:status].present?
-    @tasks = @tasks.order(:id).page(params[:page]).per(10)
+    @tasks = tasks.order(:id).page(params[:page]).per(10)
 
   end
   
@@ -31,31 +31,31 @@ class TasksController < ApplicationController
 
   def create
     # byebug
-    @task = @project.tasks.build(task_params)
-    @task.status = 'not_started'
+    task = @project.tasks.build(task_params)
+    task.status = 'not_started'
 
     # contributor_ids_on_project = User.where(id: @project.tasks.where(status: 'completed').pluck(:contributor_id)).ids
-    contributor_ids_on_project = User.where(id: @project.tasks.pluck(:contributor_id)).ids
+    contributor_ids_on_project = @project.tasks.pluck(:contributor_id)
 
-    if contributor_ids_on_project.include?(@task.contributor_id)
+    if contributor_ids_on_project.include?(task.contributor_id)
       flash.now[:alert] = "This Contributor is already assigned to this Project can't assign again!"
       render :new, status: :unprocessable_content
     else
-      if @task.save
-        flash[:notice] = "Task \"#{@task.title}\" Created Successfully!"
-        redirect_to project_task_path(@project, @task)
+      if task.save
+        flash[:notice] = "Task \"#{task.title}\" Created Successfully!"
+        redirect_to project_task_path(@project, task)
       else
-        flash.now[:alert] = @task.errors.full_messages
+        flash.now[:alert] = task.errors.full_messages
         render :new, status: :unprocessable_content
       end
     end
-    
   end
+
 
   def show
     @project = Project.find(params[:project_id])
     @task = Task.includes(:user_as_contributor).find(params[:id])
-    @contributor = @task.user_as_contributor
+    # @contributor = @task.user_as_contributor
     # render json: @project, include: [:manager, :tasks], status: :ok
   end
 
@@ -76,11 +76,11 @@ class TasksController < ApplicationController
   end
 
   def destroy
-    @task = Task.find(params[:id])
-    @project = Project.find(params[:project_id])
-    @task.destroy
+    task = Task.find(params[:id])
+    project = Project.find(params[:project_id])
+    task.destroy
     flash[:alert] = "Task \"#{@task.title}\" Deleted Successfully!"
-    redirect_to project_tasks_path(@project)
+    redirect_to project_tasks_path(project)
   end
 
   def update_status

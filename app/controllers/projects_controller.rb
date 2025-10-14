@@ -4,20 +4,20 @@ class ProjectsController < ApplicationController
 
   def index
     if current_user.admin?
-      @projects = Project.includes(:manager).all
+      projects = Project.includes(:manager).all
       
-      @projects = @projects.where(manager_id: params[:manager_id]) if params[:manager_id].present?
+      projects = @projects.where(manager_id: params[:manager_id]) if params[:manager_id].present?
 
     elsif current_user.manager?
-      @projects = Project.includes(:manager).where(manager_id: current_user.id).order(created_at: :desc).limit(10).offset(0)
+      projects = Project.includes(:manager).where(manager_id: current_user.id).order(created_at: :desc).limit(10).offset(0)
     elsif current_user.contributor?
-      @projects = Project.includes(:manager, tasks: :user_as_contributor).where(tasks: { user_as_contributor: current_user }).distinct
+      projects = Project.includes(:manager, tasks: :user_as_contributor).where(tasks: { user_as_contributor: current_user }).distinct
     else
       @project = Project.none
     end
 
-    @projects = @projects.where(status: params[:status]) if params[:status].present?
-    @projects = @projects.order(created_at: :desc).page(params[:page]).per(10)
+    projects = projects.where(status: params[:status]) if params[:status].present?
+    @projects = projects.order(created_at: :desc).page(params[:page]).per(10)
 
   end
 
@@ -31,15 +31,16 @@ class ProjectsController < ApplicationController
   end
 
   def create
-    @project = Project.new(project_params)
-    @project.manager_id = current_user.id
-    @project.status = 'active'
+    project = Project.new(project_params)
+    project.manager_id = current_user.id
+    project.status = 'active'
 
-    if @project.save
-      flash[:notice] = "Project \"#{@project.title}\" created successfully!"
-      redirect_to project_path(@project)
+    if project.save
+      flash[:notice] = "Project \"#{project.title}\" created successfully!"
+      redirect_to project_path(project)
     else
-      flash.now[:alert] = @project.errors.full_messages.to_sentence
+      flash.now[:alert] = project.errors.full_messages.to_sentence
+      @project = project
       render :new, status: :unprocessable_content
     end
   end
@@ -49,65 +50,56 @@ class ProjectsController < ApplicationController
   end
 
   def update
+    @project = Project.find(params[:id])
+
     if @project.update(project_params)
-      # render json: @project, status: :ok
-      flash[:notice] = "Task \"#{@project.title}\" Updated Successfully!"
+      flash[:notice] = "Project \"#{@project.title}\" updated successfully!"
       redirect_to projects_path(@project)
     else
-      flash.now[:alert] = @project.errors.full_messages
+      flash.now[:alert] = @project.errors.full_messages.to_sentence
       render :edit, status: :unprocessable_content
-      # render json: { errors: @project.errors.full_messages }, status: :unprocessable_content
     end
   end
 
 
-  def destroy
-    @project = Project.find(params[:id])
 
-    if @project.destroy
-      flash[:notice] = "Project \"#{@project.title}\" was successfully deleted."
+  def destroy
+    project = Project.find(params[:id])
+
+    if project.destroy
+      flash[:notice] = "Project \"#{project.title}\" was successfully deleted."
       redirect_to projects_path
     else
       flash[:alert] = "Project could not be deleted."
-      redirect_to project_path(@project)
+      redirect_to project_path(project)
     end
   end
 
   def search_project
-    @query = params[:query].to_s.strip
-    @status = params[:status].to_s.strip
+    query = params[:query].to_s.strip
+    status = params[:status].to_s.strip
 
-    if @query.empty? && (@status.empty? || @status == "All Status")
+    if query.empty? && (status.empty? || status == "All Status")
       flash[:alert] = "Please enter a search query or select a status."
       redirect_to projects_path and return
-      # @results = Project.none.paginate(page: params[:page], per_page: 10)
-      # render :search_product and return
     end
 
     if user_signed_in? && current_user.manager?
-      @results = Project.includes(:manager).where(manager_id: current_user.id)
+      results =   Project.includes(:manager).where(manager_id: current_user.id)
     elsif user_signed_in? && current_user.contributor?
-      @results = Project.includes(:tasks, :manager).where(tasks: {contributor_id: current_user.id})
+      results = Project.includes(:tasks, :manager).where(tasks: { contributor_id: current_user.id })
     else
-      @results = Project.all
+      results = Project.includes(:manager).all
     end
 
-    # @results = @results.where("title ILIKE ?", "%#{@query}%") unless @query.empty?
-    @results = @results.where("projects.title ILIKE ?", "%#{@query}%") unless @query.empty?
+    results = results.where("projects.title ILIKE ?", "%#{query}%") unless query.empty?
+    results = results.where(status: status) unless status.empty? || status == "All Status"
+    results = results.page(params[:page]).per(10)
 
+    flash.now[:notice] = "'#{results.total_count}' results found." if results.exists?
+    flash.now[:alert] = "No results found." unless results.exists?
 
-    unless @status.empty? || @status == "All Status"
-    @results = @results.where(status: @status)
-    end
-
-    @results = @results.page(params[:page]).per(10)
-
-    if @results.exists?
-      flash.now[:notice] = "'#{@results.total_count}' results found."
-    else
-      flash.now[:alert] = "No results found."
-    end
-
+    @results = results
     render :search_project
   end
 

@@ -2,9 +2,9 @@ class Admin::UsersController < ApplicationController
   before_action :authenticate_admin!
 
   def index
-    @users = User.order(:id)
-    @users = @users.where(role: params[:role]) if params[:role].present?
-    @users = @users.page(params[:page]).per(10)
+    users = User.order(:id)
+    users = users.where(role: params[:role]) if params[:role].present?
+    @users = users.page(params[:page]).per(10)
   end
 
   private

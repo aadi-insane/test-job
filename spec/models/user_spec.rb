@@ -15,7 +15,7 @@ RSpec.describe User, type: :model do
     user.email = 'proper@emailsyntax.com'
     expect(user).to be_valid
   end
-  it 'has an password' do
+  it 'has a password' do
     user = User.new(
       email: 'proper@emailsyntax.com',
       password: '',
@@ -56,7 +56,7 @@ RSpec.describe User, type: :model do
       name: ''
     )
 
-    expect(user).to be_valid
+    expect(user).not_to be_valid
     user.name = 'User Name'
     expect(user).to be_valid
   end

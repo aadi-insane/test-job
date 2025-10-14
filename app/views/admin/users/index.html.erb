@@ -1,38 +1,47 @@
-<%# app/views/admin/users/index.html.erb %>
 <h1 class="mb-4">All Users</h1>
-<!-- 
-<div class="mb-3">
-    <%= link_to "Add New User", new_admin_user_path, class: "btn btn-success" %>
+
+<div class="mb-4">
+  <%= form_with url: admin_users_path, method: :get, local: true, class: "form-inline row g-2 align-items-center" do %>
+    <div class="col-auto">
+      <label for="role" class="form-label fw-bold mb-0 me-2">Filter by Role:</label>
+    </div>
+    <div class="col-auto">
+      <%= select_tag :role, 
+          options_for_select(
+            [["All Roles", ""], ["Admin", "admin"], ["Manager", "manager"], ["Contributor", "contributor"]],
+            params[:role]
+          ), 
+          class: "form-select" %>
+    </div>
+    <div class="col-auto">
+      <%= submit_tag "Filter", class: "btn btn-primary" %>
+      <%= link_to "Reset", admin_users_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
 </div>
---> 
 
 <table class="table table-hover table-bordered">
-<thead class="table-primary">
+  <thead class="table-primary">
     <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th>Email</th>
-        <th>Role</th>
-        <!-- <th colspan="3">Action</th> -->
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
+      <th>Email</th>
+      <th>Role</th>
     </tr>
-    </thead>
+  </thead>
 
-    <tbody>
+  <tbody>
     <% @users.each do |user| %>
-        <tr>
-            <th scope="row"><%= user.id %></th>
-            <td><%= user.name || "N/A" %></td>
-            <td><%= user.email %></td>
-            <td><%= user.role.humanize %></td>
-            <!-- 
-            <td><%= link_to 'Show', admin_user_path(user), class: "btn btn-sm btn-info" %></td>
-            <td><%= link_to 'Edit', edit_admin_user_path(user),class: "btn btn-sm btn-warning" %></td>
-            <td><%= link_to 'Destroy', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-sm btn-danger" %></td>
-            -->
-        </tr>
+      <tr>
+        <th scope="row"><%= user.id %></th>
+        <td><%= user.name || "N/A" %></td>
+        <td><%= user.email %></td>
+        <td><%= user.role.humanize %></td>
+      </tr>
     <% end %>
-    </tbody>
+  </tbody>
 </table>
+
 <div class="d-flex justify-content-center">
   <%= paginate @users, theme: 'bootstrap4' %>
 </div>

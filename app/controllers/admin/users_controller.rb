@@ -1,15 +1,17 @@
-    # app/controllers/admin/users_controller.rb
-    class Admin::UsersController < ApplicationController
-      before_action :authenticate_admin! # Or a similar authorization check
+class Admin::UsersController < ApplicationController
+  before_action :authenticate_admin!
 
-      def index
-        @users = User.order(:id).page(params[:page]).per(10)
-      end
+  def index
+    @users = User.order(:id)
+    @users = @users.where(role: params[:role]) if params[:role].present?
+    @users = @users.page(params[:page]).per(10)
+  end
 
-      private
+  private
 
-      def authenticate_admin!
-        user_signed_in? && current_user.admin?
-        redirect_to root_path, alert: "Access denied." unless current_user&.admin?
-      end
+  def authenticate_admin!
+    unless user_signed_in? && current_user.admin?
+      redirect_to root_path, alert: "Access denied."
     end
+  end
+end

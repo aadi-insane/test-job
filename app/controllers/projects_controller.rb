@@ -5,6 +5,9 @@ class ProjectsController < ApplicationController
   def index
     if current_user.admin?
       @projects = Project.includes(:manager).all
+      
+      @projects = @projects.where(manager_id: params[:manager_id]) if params[:manager_id].present?
+
     elsif current_user.manager?
       @projects = Project.includes(:manager).where(manager_id: current_user.id).order(created_at: :desc).limit(10).offset(0)
     elsif current_user.contributor?

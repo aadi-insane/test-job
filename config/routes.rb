@@ -31,5 +31,7 @@ Rails.application.routes.draw do
   resources :tasks, only: [:index, :show]
 
   get '/search', to: 'projects#search_project', as: :search_project
+  # post "project_descriptions", to: "projects#generate_project_description", as: :project_descriptions
+
   
 end

@@ -1,6 +1,7 @@
 class Project < ApplicationRecord
   include AASM
 
+  # has_rich_text :content
   has_many :tasks, dependent: :destroy
   belongs_to :manager, class_name: "User", foreign_key: "manager_id"
 

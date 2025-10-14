@@ -26,7 +26,7 @@
     <p class="card-text">
       <strong>Assignee ID & Name:</strong>
       <% if @task.contributor_id %>
-        <%= @task.contributor_id %> , <%= @contributor.name %>
+        <%= @task.contributor_id %> , <%= @task.user_as_contributor.name %>
       <% else %>
         <span class="text-muted">N/A</span>
       <% end %>

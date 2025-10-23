@@ -42,6 +42,7 @@ class Ability
     elsif user.manager?
       can [:read, :create, :update], Project, manager_id: user.id
       cannot :destroy, Project
+
       can [:read, :create, :update, :destroy], Task, project: { manager_id: user.id }
       can :assign, Task, project: { manager_id: user.id }
       can :update_status, Task, project: { manager_id: user.id }
@@ -56,6 +57,7 @@ class Ability
 
     elsif user.contributor?
       can :read, Project, tasks: {contributor_id: user.id}
+      
       can [:read, :update], Task
       cannot [:create, :destroy], Project
       cannot [:create, :destroy], Task

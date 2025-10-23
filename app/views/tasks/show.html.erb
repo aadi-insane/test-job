@@ -2,7 +2,7 @@
 
 <div class="card shadow-sm w-50 align-items-center m-auto border border-primary" style="border-radius: 20px;">
   <div class="card-body">
-      <p class="text-center"><u>Project: <%= @project.title %></u> </p>
+    <p class="text-center"><u>Project: <%= @project.title %></u> </p>
 
     <p class="card-text">
       <strong>Description:</strong><br>
@@ -35,17 +35,49 @@
     <p class="card-text">
       <strong>Status:</strong>
       <% if @task.status == 'not_started' %>
-          <span class="badge bg-info text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
+        <span class="badge bg-info text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
       <% elsif @task.status == 'in_progress' %>
-          <span class="badge bg-success text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
+        <span class="badge bg-success text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
       <% else %>
-          <span class="badge bg-warning text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
+        <span class="badge bg-warning text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
       <% end %>
     </p>
 
     <p class="card-text">
       <strong>Start Date:</strong>
       <%= @task.created_at.strftime('%d %B %Y') %>
+    </p>
+
+    <p class="card-text mt-3">
+      <strong>Depends On:</strong><br>
+        <% if @task.prerequisite_tasks.any? %>
+         <ul class="list-group list-group-flush">
+           <% @task.prerequisite_tasks.each do |prereq_task| %>
+             <li class="list-group-item d-flex justify-content-between align-items-center">
+               <%= link_to prereq_task.title, project_task_path(@project, prereq_task), class: "text-decoration-none" %>
+               <span class="badge bg-secondary"><%= prereq_task.status.humanize %></span>
+             </li>
+           <% end %>
+         </ul>
+       <% else %>
+         <span class="text-muted">No dependencies.</span>
+       <% end %>
+    </p>
+
+    <p class="card-text mt-3">
+      <strong>Dependent Tasks:</strong><br>
+      <% if @task.dependent_tasks.any? %>
+        <ul class="list-group list-group-flush">
+          <% @task.dependent_tasks.each do |dep_task| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <%= link_to dep_task.title, project_task_path(@project, dep_task), class: "text-decoration-none" %>
+              <span class="badge bg-secondary"><%= dep_task.status.humanize %></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <span class="text-muted">No dependent tasks.</span>
+      <% end %>
     </p>
 
     <div class="mt-4 d-flex flex-wrap gap-2">
@@ -58,7 +90,7 @@
       <% if current_user.admin? || current_user.manager? %>
         <%= link_to "Back to Project", project_tasks_path(@project), class: "btn btn-secondary" %>
       <% else %>
-        <%= link_to "Back to Projects", projects_path, class: "btn btn-primary" %>
+        <%= link_to "Back to Projects", projects_path, class: "btn btn-secondary" %>
       <% end %>
     </div>
   </div>

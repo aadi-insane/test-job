@@ -35,4 +35,5 @@
 /config/master.key
 
 description.md
-db/seeds.rb
+# db/seeds.rb
+GUIDE.md

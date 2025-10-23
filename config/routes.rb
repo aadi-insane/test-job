@@ -28,7 +28,10 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :tasks, only: [:index, :show]
+  # resources :tasks, only: [:index, :show]
+  resources :tasks, only: [:index, :show] do
+    post 'add_dependency', to: 'task_dependencies#create'
+  end
 
   get '/search', to: 'projects#search_project', as: :search_project
   # post "project_descriptions", to: "projects#generate_project_description", as: :project_descriptions

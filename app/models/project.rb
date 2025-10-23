@@ -9,7 +9,7 @@ class Project < ApplicationRecord
 
   normalizes :title, with: ->(value) { value.split.map(&:capitalize).join(' ') }
 
-  aasm column: 'status', enum: true do
+  aasm column: 'status' do
     state :active, initial: true
     state :inactive
     state :completed

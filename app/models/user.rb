@@ -8,6 +8,7 @@ class User < ApplicationRecord
   normalizes :name, with: ->(value) { value.split.map(&:capitalize).join(' ') }
 
   enum role: { contributor: 0, manager: 1, admin: 2 }
+  enum status: { active: 0, inactive: 1 }
 
   has_many :projects_as_manager, class_name: "Project", foreign_key: "manager_id", dependent: :destroy
 

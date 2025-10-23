@@ -1,22 +1,7 @@
 <div class="w-75">
   <%= form_with model: [@project, @task], class: "p-4 border rounded bg-light shadow-sm" do |form| %>
-  <%# <%= form_with url: project_tasks_url, class: "p-4 border rounded bg-light shadow-sm" do |form| %> 
-    
-    <!-- 
-    <% if @task.errors.any? %>
-      <div class="alert alert-danger">
-        <h4 class="alert-heading">Please fix the following errors:</h4>
-        <ul>
-          <% @task.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %> 
-    -->
 
     <% if current_user.admin? || current_user.manager? %>
-
       <div class="mb-3">
         <%= form.label :title, class: "form-label" %>
         <%= form.text_field :title, class: "form-control", placeholder: "Task Title" %>
@@ -28,19 +13,31 @@
       </div>
 
       <% if @task.id %>
-        <div>
+        <div class="mb-3">
           <%= form.label :contributor_id, "Select an Assignee" %>
-          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id), selected: @task.contributor_id ), {}, { class: "form-select" } %>
+          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id), selected: @task.contributor_id), {}, { class: "form-select" } %>
         </div>
       <% else %>
-        <div>
+        <div class="mb-3">
           <%= form.label :contributor_id, "Select an Assignee" %>
-          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id)), {:prompt => 'Select a Contributor'}, { class: "form-select" } %>
+          <%= form.select :contributor_id, options_for_select(User.where(role: 0).pluck(:name, :id)), { prompt: 'Select a Contributor' }, { class: "form-select" } %>
+        </div>
+      <% end %>
+
+      <% if @project.tasks.any? %>
+        <div class="mb-3">
+          <%= form.label :dependent_task_ids, "Select Dependent Tasks" %>
+          <%= form.collection_select :dependent_task_ids,
+                @project.tasks.where.not(id: @task.id),
+                :id,
+                :title,
+                { selected: @task.dependent_tasks.pluck(:id), include_hidden: false },
+                { multiple: true, class: "form-select" } %>
+          <small class="text-muted">Tasks selected here must be completed before this task can be marked complete.</small>
         </div>
       <% end %>
 
     <% else %>
-
       <div class="mb-3">
         <%= form.label :title, class: "form-label" %>
         <%= form.text_field :title, value: @task.title, readonly: true, class: "form-control text-muted" %>
@@ -50,20 +47,28 @@
         <%= form.label :description, class: "form-label" %>
         <%= form.text_area :description, value: @task.description, readonly: true, class: "form-control text-muted", rows: 5 %>
       </div>
-      
-      <div>
+
+      <div class="mb-3">
         <%= form.label :status, "Update Task Status" %>
 
-        <!-- Get all AASM states as strings -->
-        <% allowed_statuses = Task.aasm.states.map(&:name).map(&:to_s) %>
+        <% current_state = @task.aasm.current_state.to_s %>
+        <% allowed_states_from_events = @task.aasm.events(permitted: true).map(&:transitions).flatten.map(&:to).map(&:to_s).uniq %>
 
-        <!-- If task is already completed, prevent status changes by limiting to 'completed' -->
-        <% allowed_statuses = ['completed'] if @task.status == 'completed' %>
+        <% options = Task.aasm.states.map(&:name).map(&:to_s).map do |state| %>
+          <% is_current = (state == current_state) %>
+          <% is_allowed = allowed_states_from_events.include?(state) %>
 
-        <%= form.select :status,
-              allowed_statuses.map { |s| [s.humanize.upcase, s] },
-              {},
-              { class: "form-select" } %>
+          <% html_options = {} %>
+          <% unless is_current || is_allowed %>
+            <% html_options[:disabled] = true %>
+          <% end %>
+
+          <% [state.humanize.upcase, state, html_options] %>
+        <% end %>
+
+        <%= select_tag 'task[status]',
+                      options_for_select(options, current_state),
+                      class: "form-select" %>
       </div>
     <% end %>
 

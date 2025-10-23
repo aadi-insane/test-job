@@ -5,11 +5,25 @@ class Task < ApplicationRecord
   belongs_to :project
 
   validates :title, presence: true
-  validate :valid_status_transition, on: :update
+  validate :cannot_complete_if_dependencies_incomplete, on: :update
+  validate :assignee_must_be_active
 
   normalizes :title, with: ->(value) { value.split.map(&:capitalize).join(' ') }
 
-  aasm column: 'status', enum: true do
+  has_many :task_dependencies
+  has_many :dependent_tasks, through: :task_dependencies, source: :dependent_task, class_name: "Task"
+
+  has_many :inverse_task_dependencies, class_name: "TaskDependency", foreign_key: "dependent_task_id"
+  has_many :prerequisite_tasks, through: :inverse_task_dependencies, source: :task, class_name: "Task"
+
+  # after_commit :enqueue_dependency_resolution_job, on: :update, if: :saved_change_to_status?
+  after_commit :check_project_completion_after_task, on: :update, if: :saved_change_to_status?
+
+  def dependencies_completed?
+    prerequisite_tasks.all? { |t| t.completed? }
+  end
+
+  aasm column: 'status' do
     state :not_started, initial: true
     state :in_progress
     state :completed
@@ -19,47 +33,29 @@ class Task < ApplicationRecord
     end
 
     event :complete do
-      transitions from: [:not_started, :in_progress], to: :completed, after: :check_project_completion
+      transitions from: [:in_progress], to: :completed, guard: :dependencies_completed?
     end
   end
 
   private
-    # def check_project_completion
-    #   if project.tasks.where.not(status: "completed").none?
-    #     project.update(status: "completed")
-    #   end
-    # end
-
-    def check_project_completion
-      if project.tasks.where.not(status: 'completed').none? && project.may_complete?
-        project.complete!
-        project.deactivate! if project.may_deactivate?
+    def check_project_completion_after_task
+      return unless completed?
+      incomplete_tasks = project.tasks.where.not(status: 'completed')
+      if incomplete_tasks.none?
+        project.update(status: 'completed') if project.status == 'active'
+        project.update(status: 'inactive') if project.status == 'completed'
       end
     end
 
+    def cannot_complete_if_dependencies_incomplete
+      if status_changed? && status.to_sym == :completed && !dependencies_completed?
+        errors.add(:status, "cannot be marked completed until all dependent tasks are completed")
+      end
+    end
 
-
-    def valid_status_transition
-      return unless status_changed?
-
-      from = status_was&.to_sym
-      to = status&.to_sym
-
-      case [from, to]
-      when [:not_started, :in_progress]
-        true
-      when [:not_started, :completed]
-        true
-      when [:in_progress, :completed]
-        true
-      when [:in_progress, :in_progress]
-        true
-      when [:not_started, :not_started]
-        true
-      when [:completed, :completed]
-        true
-      else
-        errors.add(:status, "transition from #{from} to #{to} is not allowed")
+    def assignee_must_be_active
+      if user_as_contributor && !user_as_contributor.active?
+        errors.add(:contributor_id, "cannot assign task to inactive user")
       end
     end
 end

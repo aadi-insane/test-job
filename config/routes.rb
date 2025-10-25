@@ -1,5 +1,6 @@
 # config/routes.rb
 Rails.application.routes.draw do
+  require 'sidekiq/web'
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -36,5 +37,11 @@ Rails.application.routes.draw do
   get '/search', to: 'projects#search_project', as: :search_project
   # post "project_descriptions", to: "projects#generate_project_description", as: :project_descriptions
 
-  
+  authenticate :user, lambda { |u| u.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
+
+  if Rails.env.development?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
 end

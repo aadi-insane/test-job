@@ -48,7 +48,8 @@ class TasksController < ApplicationController
   end
 
   def show
-    @task = @project.tasks.includes(:user_as_contributor, :dependent_tasks).find(params[:id])
+    # @task = @project.tasks.includes(:user_as_contributor, :dependent_tasks).find(params[:id])
+    @task = @project.tasks.find(params[:id])
   end
 
   def edit
@@ -132,6 +133,7 @@ class TasksController < ApplicationController
   private
 
     def task_params
-      params.require(:task).permit(:title, :description, :status, :project_id, :contributor_id, dependent_task_ids: [])
+      params.require(:task).permit(:title, :description, :status, :project_id, :contributor_id, :due_date, dependent_task_ids: [])
     end
+
 end

@@ -1,20 +1,20 @@
 FactoryBot.define do
-  factory :contributor, class: User do
+  factory :user, class: User do
     name        { Faker::Name.name }
     email       { Faker::Internet.email }
     password    { Faker::Internet.password }
-    role        { 'contributor'}
+    role        { 'contributor' }
   end
-  factory :manager, class: User do
-    name        { Faker::Name.name }
-    email       { Faker::Internet.email }
-    password    { Faker::Internet.password }
-    role        { 'manager' }
+
+  factory :contributor, parent: :user do
+    role { 'contributor' }
   end
-  factory :admin, class: User do
-    name        { Faker::Name.name }
-    email       { Faker::Internet.email }
-    password    { Faker::Internet.password }
-    role        { 'admin' }
+
+  factory :manager, parent: :user do
+    role { 'manager' }
+  end
+
+  factory :admin, parent: :user do
+    role { 'admin' }
   end
 end

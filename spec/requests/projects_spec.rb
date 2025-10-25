@@ -71,6 +71,7 @@ RSpec.describe "Projects", type: :request do
         task_params = {
           task: {
             title: "Test Task",
+            due_date: Date.today,
             status: 'not_started',
             project_id: project.id,
             contributor_id: contributor.id
@@ -91,6 +92,7 @@ RSpec.describe "Projects", type: :request do
         task_params = {
           task: {
             title: "Test Task",
+            due_date: Date.today,
             status: 'not_started',
             project_id: new_project.id,
             contributor_id: contributor.id
@@ -130,6 +132,7 @@ RSpec.describe "Projects", type: :request do
         task_params = {
           task: {
             title: "Test Task",
+            due_date: Date.today,
             status: 'not_started',
             project_id: new_project.id,
             contributor_id: contributor.id
@@ -150,6 +153,7 @@ RSpec.describe "Projects", type: :request do
         task_params = {
           task: {
             title: "Test Task",
+            due_date: Date.today,
             status: 'not_started',
             project_id: new_project.id,
             contributor_id: contributor.id

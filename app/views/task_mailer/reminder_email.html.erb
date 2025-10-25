@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Task Reminder</h2>
+    <p>Hi <%= @user.name %>,</p>
+
+    <p>This is a friendly reminder that your task "<strong><%= @task.title %></strong>" is due on <strong><%= @task.due_date.strftime("%d %B %Y") %></strong>.</p>
+
+    <% if @task.description.present? %>
+      <p><strong>Task Description:</strong> <%= @task.description %></p>
+    <% end %>
+
+    <p>Please make sure to complete it on time.</p>
+
+    <p>Thanks,<br>Your Project Management Team</p>
+  </body>
+</html>

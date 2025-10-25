@@ -4,14 +4,6 @@
   <div class="card-body">
     <p class="text-center"><u>Project: <%= @project.title %></u> </p>
 
-    <p class="card-text">
-      <strong>Description:</strong><br>
-      <% if @task.description.present? %>
-        <%= @task.description %>
-      <% else %>
-        <span class="text-muted">No description provided.</span>
-      <% end %>
-    </p>
 
 
     <p class="card-text">
@@ -33,6 +25,17 @@
     </p>
 
     <p class="card-text">
+      <strong class="d-block mb-2">Description:</strong>
+      <span class="border border-secondary rounded-3 p-2 d-block mb-2">
+        <% if @task.description.present? %>
+          <%= @task.description %>
+        <% else %>
+          <span class="text-muted">No description provided.</span>
+        <% end %>
+      </span>
+    </p>
+
+    <p class="card-text">
       <strong>Status:</strong>
       <% if @task.status == 'not_started' %>
         <span class="badge bg-info text-dark"><%= @task.status.split('_').join(' ').upcase %></span>
@@ -43,9 +46,16 @@
       <% end %>
     </p>
 
-    <p class="card-text">
-      <strong>Start Date:</strong>
-      <%= @task.created_at.strftime('%d %B %Y') %>
+    <p class="card-text d-flex flex-row gap-4">
+      <span><strong>Start Date:</strong> <%= @task.created_at.strftime('%d %B %Y') %></span>
+      <span>
+        <strong>Due Date:</strong>
+        <% if @task.due_date.present? %>
+          <%= @task.due_date.strftime('%d %B %Y') %>
+        <% else %>
+          <span class="text-muted">No due date set.</span>
+        <% end %>
+      </span>
     </p>
 
     <p class="card-text mt-3">

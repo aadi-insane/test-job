@@ -4,19 +4,21 @@ class Task < ApplicationRecord
   belongs_to :user_as_contributor, class_name: "User", foreign_key: "contributor_id"
   belongs_to :project
 
-  validates :title, presence: true
+  validates :title, :due_date, presence: true
   validate :cannot_complete_if_dependencies_incomplete, on: :update
   validate :assignee_must_be_active
 
   normalizes :title, with: ->(value) { value.split.map(&:capitalize).join(' ') }
 
+  # Ye Dependent Tasks k liye
   has_many :task_dependencies
   has_many :dependent_tasks, through: :task_dependencies, source: :dependent_task, class_name: "Task"
 
+  # Ye Prerequisite Tasks k liye
   has_many :inverse_task_dependencies, class_name: "TaskDependency", foreign_key: "dependent_task_id"
   has_many :prerequisite_tasks, through: :inverse_task_dependencies, source: :task, class_name: "Task"
 
-  # after_commit :enqueue_dependency_resolution_job, on: :update, if: :saved_change_to_status?
+  after_commit :enqueue_dependency_resolution, if: :completed?
   after_commit :check_project_completion_after_task, on: :update, if: :saved_change_to_status?
 
   def dependencies_completed?
@@ -42,8 +44,7 @@ class Task < ApplicationRecord
       return unless completed?
       incomplete_tasks = project.tasks.where.not(status: 'completed')
       if incomplete_tasks.none?
-        project.update(status: 'completed') if project.status == 'active'
-        project.update(status: 'inactive') if project.status == 'completed'
+        ProjectCompletionWorker.perform_async(project.id)
       end
     end
 
@@ -57,5 +58,9 @@ class Task < ApplicationRecord
       if user_as_contributor && !user_as_contributor.active?
         errors.add(:contributor_id, "cannot assign task to inactive user")
       end
+    end
+
+    def enqueue_dependency_resolution
+      DependencyResolutionWorker.perform_async(id)
     end
 end

@@ -1,9 +1,17 @@
 FactoryBot.define do
   factory :task do
-    title { Faker::Book.title }
-    description { Faker::Lorem.paragraph(sentence_count: 5) }
-    status { 'not_started' }
-    contributor_id { FactoryBot.create(:contributor).id }
-    project_id { FactoryBot.create(:project).id }
+    title { "Test Task" }
+    due_date { 1.week.from_now }
+    status { :not_started }
+    user_as_contributor { create(:user) }
+    project { create(:project) }
+
+    trait :completed do
+      status { :completed }
+    end
+
+    trait :in_progress do
+      status { :in_progress }
+    end
   end
 end

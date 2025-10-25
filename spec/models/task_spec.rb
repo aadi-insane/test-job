@@ -10,6 +10,7 @@ RSpec.describe Task, type: :model do
         title: '',
         description: 'A valid description.',
         status: 'not_started',
+        due_date: Date.today,
         contributor_id: contributor.id,
         project_id: project.id
       )
@@ -23,6 +24,7 @@ RSpec.describe Task, type: :model do
         title: 'A title',
         description: '',
         status: 'not_started',
+        due_date: Date.today,
         contributor_id: contributor.id,
         project_id: project.id
       )
@@ -34,6 +36,7 @@ RSpec.describe Task, type: :model do
         title: 'A title',
         description: 'A valid description.',
         status: 'not_started',
+        due_date: Date.today,
         contributor_id: nil,
         project_id: project.id
       )
@@ -47,6 +50,7 @@ RSpec.describe Task, type: :model do
         title: 'A title',
         description: 'A valid description.',
         status: 'not_started',
+        due_date: Date.today,
         contributor_id: contributor.id,
         project_id: nil
       )
@@ -60,6 +64,7 @@ RSpec.describe Task, type: :model do
         title: 'A title',
         description: 'A valid description.',
         status: 'random_status',
+        due_date: Date.today,
         contributor_id: contributor.id,
         project_id: project.id
       )
@@ -74,35 +79,68 @@ RSpec.describe Task, type: :model do
       task.status = 'completed'
       expect(task).to be_valid
     end
+
+    it 'has a valid due date' do
+      task = Task.new(
+        title: 'A title',
+        description: 'A valid description.',
+        status: 'not_started',
+        due_date: '',
+        contributor_id: contributor.id,
+        project_id: project.id
+      )
+      expect(task).not_to be_valid
+
+      task.due_date = Date.today
+      expect(task).to be_valid
+    end
   end
 
   describe 'status transitions' do
-    let(:task) { FactoryBot.create(:task) }
+    let(:contributor) { create(:contributor) }
+    let(:task) { create(:task, contributor_id: contributor.id) }
 
-    it 'allows valid transitions by updating status directly' do
-      task.update!(status: 'in_progress')
-      expect(task.reload.status).to eq('in_progress')
+    context 'when the status is not_started' do
+      it 'can transition to in_progress' do
+        expect(task.status).to eq('not_started')
+        task.start!
+        expect(task.status).to eq('in_progress')
+      end
 
-      task.update!(status: 'completed')
-      expect(task.reload.status).to eq('completed')
+      it 'cannot transition directly to completed' do
+        expect { task.complete! }.to raise_error(AASM::InvalidTransition)
+      end
     end
 
-    it 'allows same status update' do
-      expect(task.update(status: 'not_started')).to be true
-      expect(task.errors).to be_empty
+    context 'when the status is in_progress' do
+      before { task.start! }
+
+      it 'can transition to completed' do
+        allow(task).to receive(:dependencies_completed?).and_return(true)
+        task.complete!
+        expect(task.status).to eq('completed')
+      end
+
+      it 'cannot transition to not_started' do
+        expect { task.start! }.to raise_error(AASM::InvalidTransition)
+      end
     end
 
-    it 'prevents invalid transition: completed to in_progress' do
-      task.update!(status: 'completed')
-      expect {
-        task.update!(status: 'in_progress')
-      }.to raise_error(ActiveRecord::RecordInvalid)
-    end
+    context 'when the status is completed' do
+      before do
+        task.start!
+        allow(task).to receive(:dependencies_completed?).and_return(true)
+        task.complete!
+      end
 
-    it 'prevents unknown status update' do
-      expect {
-        task.update!(status: 'random_status')
-      }.to raise_error(ActiveRecord::RecordInvalid)
+      it 'cannot transition to in_progress' do
+        expect { task.start! }.to raise_error(AASM::InvalidTransition)
+      end
+
+      it 'cannot transition to not_started' do
+        expect { task.start! }.to raise_error(AASM::InvalidTransition)
+      end
     end
   end
+
 end

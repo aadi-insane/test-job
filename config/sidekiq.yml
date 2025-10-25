@@ -1,0 +1,12 @@
+:concurrency: 5
+:queues:
+  - critical
+  - default
+  - mailers
+  - task_reminders
+  - dependency_resolution
+  - project_completion
+  - bulk_import
+  - idempotent_jobs
+:redis:
+  url: redis://localhost:6379/0

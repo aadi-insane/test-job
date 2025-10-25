@@ -4,4 +4,8 @@ class ApplicationJob < ActiveJob::Base
 
   # Most jobs are safe to ignore if the underlying records are no longer available
   # discard_on ActiveJob::DeserializationError
+
+  rescue_from ActiveJob::DeserializationError do |exception|
+    Rails.logger.warn "Skipping job: #{exception.message}"
+  end
 end

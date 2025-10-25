@@ -1,0 +1,6 @@
+title,description,status,contributor_id,due_date,project_id
+Design Homepage,Create homepage UI,not_started,4,2025-11-05,17
+Setup Database,Initialize PostgreSQL for project,not_started,5,2025-11-07,17
+Write API Docs,Document all endpoints,not_started,6,2025-11-10,17
+Fix Login Bug,Resolve user login issue,not_started,7,2025-11-02,17
+Deploy to Production,Push final release to prod,not_started,8,2025-11-12,17

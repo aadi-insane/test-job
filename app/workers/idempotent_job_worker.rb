@@ -1,4 +1,3 @@
-# app/workers/idempotent_job_worker.rb
 class IdempotentJobWorker
   include Sidekiq::Worker
   include Sidekiq::Status::Worker

@@ -24,6 +24,14 @@ class CreateTaskWorker
   def perform(task_data, project_id)
     project = Project.find_by(id: project_id)
     return unless project
+    status_mapping = {
+      "0" => "not_started",
+      "1" => "in_progress",
+      "2" => "completed"
+    }
+
+    task_data["status"] = status_mapping[task_data["status"]]
+
     project.tasks.create!(task_data)
   end
 end

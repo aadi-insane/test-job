@@ -1,4 +1,3 @@
-# app/workers/project_completion_worker.rb
 class ProjectCompletionWorker
   include Sidekiq::Worker
   include Sidekiq::Status::Worker

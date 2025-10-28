@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+# ruby "3.0.7"
 ruby "3.0.0"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
@@ -9,7 +10,8 @@ gem "rails", "~> 7.1.5", ">= 7.1.5.2"
 gem "sprockets-rails"
 
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+# gem "pg", "~> 1.1"
+gem "pg", force_ruby_platform: true
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
@@ -85,3 +87,6 @@ gem 'sidekiq-unique-jobs'
 gem 'sidekiq-scheduler'
 gem "letter_opener"
 gem 'letter_opener_web'
+
+gem 'dotenv-rails'
+gem 'tsort', "0.1.0"

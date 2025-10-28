@@ -9,4 +9,5 @@
   - bulk_import
   - idempotent_jobs
 :redis:
-  url: redis://localhost:6379/0
+  url: redis://redis:6379/0
+:logfile: ./log/sidekiq.log

@@ -23,7 +23,7 @@ class TasksController < ApplicationController
 
   def create
     # byebug
-    @task = @project.tasks.build(task_params)
+    @task = @project.tasks.build(task_params.except(:dependent_task_ids))
     @task.status = 'not_started'
 
     contributor_ids_on_project = @project.tasks.pluck(:contributor_id)

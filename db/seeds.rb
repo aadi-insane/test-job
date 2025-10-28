@@ -26,41 +26,38 @@ puts "\n" + "=" * 80
 puts "Creating Users..."
 puts "=" * 80
 
-# 1. Create 1 Admin User
 puts "\nCreating 1 Admin user..."
 admin = User.create!(
   name: "Admin User",
   email: "admin@example.com",
-  password: "password123",
-  password_confirmation: "password123",
+  password: "Asdf@1234",
+  password_confirmation: "Asdf@1234",
   role: :admin
 )
 puts "✓ Admin created: #{admin.email}"
 
-# 2. Create 5 Manager Users
 puts "\nCreating 5 Manager users..."
 managers = []
 5.times do |i|
   manager = User.create!(
     name: "Manager #{i + 1}",
     email: "manager#{i + 1}@example.com",
-    password: "password123",
-    password_confirmation: "password123",
+    password: "Asdf@1234",
+    password_confirmation: "Asdf@1234",
     role: :manager
   )
   managers << manager
   puts "✓ Manager #{i + 1} created: #{manager.email}"
 end
 
-# 3. Create 24 Contributor Users
 puts "\nCreating 24 Contributor users..."
 contributors = []
 24.times do |i|
   contributor = User.create!(
     name: "Contributor #{i + 1}",
     email: "contributor#{i + 1}@example.com",
-    password: "password123",
-    password_confirmation: "password123",
+    password: "Asdf@1234",
+    password_confirmation: "Asdf@1234",
     role: :contributor
   )
   contributors << contributor
@@ -100,11 +97,9 @@ managers.each_with_index do |manager, manager_idx|
     5.times do |task_idx|
       task_count += 1
       
-      # Assign task to a different contributor (cycling through the list)
       contributor = contributors[contributor_index % contributors.length]
       contributor_index += 1
       
-      # Randomly assign initial status
       initial_status = ["not_started", "in_progress"].sample
       
       task = Task.create!(
@@ -153,15 +148,15 @@ puts "Sample Login Credentials:"
 puts "=" * 80
 puts "\nAdmin:"
 puts "  Email: admin@example.com"
-puts "  Password: password123"
+puts "  Password: Asdf@1234"
 
 puts "\nManager 1:"
 puts "  Email: manager1@example.com"
-puts "  Password: password123"
+puts "  Password: Asdf@1234"
 
 puts "\nContributor 1:"
 puts "  Email: contributor1@example.com"
-puts "  Password: password123"
+puts "  Password: Asdf@1234"
 
 puts "\n" + "=" * 80
 puts "Seeding finished successfully!"

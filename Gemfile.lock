@@ -127,6 +127,10 @@ GEM
       devise (~> 4.0)
       warden-jwt_auth (~> 0.10)
     diff-lcs (1.6.2)
+    dotenv (3.1.8)
+    dotenv-rails (3.1.8)
+      dotenv (= 3.1.8)
+      railties (>= 6.1)
     drb (2.2.3)
     dry-auto_inject (1.0.1)
       dry-core (~> 1.0)
@@ -237,10 +241,6 @@ GEM
     numerizer (0.1.1)
     orm_adapter (0.5.0)
     pg (1.6.2)
-    pg (1.6.2-aarch64-linux)
-    pg (1.6.2-arm64-darwin)
-    pg (1.6.2-x86_64-darwin)
-    pg (1.6.2-x86_64-linux)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -361,7 +361,7 @@ GEM
     stringio (3.1.7)
     thor (1.4.0)
     timeout (0.4.3)
-    tsort (0.2.0)
+    tsort (0.1.0)
     turbo-rails (2.0.12)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
@@ -408,6 +408,7 @@ DEPENDENCIES
   debug
   devise
   devise-jwt
+  dotenv-rails
   factory_bot_rails
   faker
   groupdate
@@ -416,7 +417,7 @@ DEPENDENCIES
   kaminari (~> 1.2)
   letter_opener
   letter_opener_web
-  pg (~> 1.1)
+  pg
   puma (>= 5.0)
   rails (~> 7.1.5, >= 7.1.5.2)
   redis (>= 4.0.1)
@@ -428,6 +429,7 @@ DEPENDENCIES
   sidekiq-unique-jobs
   sprockets-rails
   stimulus-rails
+  tsort (= 0.1.0)
   turbo-rails
   tzinfo-data
   web-console

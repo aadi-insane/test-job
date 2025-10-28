@@ -6,7 +6,7 @@ class Task < ApplicationRecord
 
   validates :title, :due_date, presence: true
   validate :cannot_complete_if_dependencies_incomplete, on: :update
-  validate :assignee_must_be_active
+  # validate :assignee_must_be_active
 
   normalizes :title, with: ->(value) { value.split.map(&:capitalize).join(' ') }
 
@@ -25,19 +25,45 @@ class Task < ApplicationRecord
     prerequisite_tasks.all? { |t| t.completed? }
   end
 
+  # aasm column: 'status' do
+  #   state :not_started, initial: true
+  #   state :in_progress
+  #   state :completed
+
+  #   event :start do
+  #     transitions from: :not_started, to: :in_progress
+  #   end
+
+  #   event :complete do
+  #     transitions from: [:in_progress], to: :completed, guard: :dependencies_completed?
+  #   end
+  # end
+
+
+  # Needed to update because of sidekiq DependencyResolutionWorker
   aasm column: 'status' do
     state :not_started, initial: true
     state :in_progress
+    state :blocked
     state :completed
 
     event :start do
       transitions from: :not_started, to: :in_progress
     end
 
+    event :block do
+      transitions from: [:not_started, :in_progress], to: :blocked
+    end
+
+    event :unblock do
+      transitions from: :blocked, to: :in_progress
+    end
+
     event :complete do
-      transitions from: [:in_progress], to: :completed, guard: :dependencies_completed?
+      transitions from: [:in_progress, :blocked], to: :completed, guard: :dependencies_completed?
     end
   end
+
 
   private
     def check_project_completion_after_task
@@ -54,11 +80,11 @@ class Task < ApplicationRecord
       end
     end
 
-    def assignee_must_be_active
-      if user_as_contributor && !user_as_contributor.active?
-        errors.add(:contributor_id, "cannot assign task to inactive user")
-      end
-    end
+    # def assignee_must_be_active
+    #   if user_as_contributor && !user_as_contributor.active?
+    #     errors.add(:contributor_id, "cannot assign task to inactive user")
+    #   end
+    # end
 
     def enqueue_dependency_resolution
       DependencyResolutionWorker.perform_async(id)

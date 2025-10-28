@@ -8,11 +8,11 @@ class HelloJob
   end
 end
 
-puts "hello from outside the job"
+# puts "hello from outside the job"
 
-HelloJob.perform_in(60)
+# HelloJob.perform_in(60)
 
-puts "hello from after the job"
+# puts "hello from after the job"
 
 # Methods related to background jobs in Sidekiq
 # perform
@@ -20,3 +20,9 @@ puts "hello from after the job"
 # perform_in
 # perform_at
 # perform_later  # This is framework-agnostic Rails method
+
+# command to start sidekiq
+# bundle exec sidekiq -e development -C config/sidekiq.yml
+
+# command to start docker console
+# docker compose exec web bash

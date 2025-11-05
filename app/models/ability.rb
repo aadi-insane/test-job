@@ -58,7 +58,7 @@ class Ability
     elsif user.contributor?
       can :read, Project, tasks: {contributor_id: user.id}
       
-      can [:read, :update], Task
+      can [:read, :update], Task, contributor_id: user.id
       cannot [:create, :destroy], Project
       cannot [:create, :destroy], Task
       can :update_status, Task, contributor_id: user.id

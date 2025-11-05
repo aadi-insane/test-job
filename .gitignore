@@ -38,3 +38,6 @@ description.md
 # db/seeds.rb
 GUIDE.md
 .env
+results.html
+tasks.csv
+project_review.md

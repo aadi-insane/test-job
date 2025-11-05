@@ -76,6 +76,11 @@
             <% html_options[:disabled] = true %>
           <% end %>
 
+          <%# Disable 'blocked' for contributors %>
+          <% if current_user.contributor? && state == 'blocked' %>
+            <% html_options[:disabled] = true %>
+          <% end %>
+
           <% [state.humanize.upcase, state, html_options] %>
         <% end %>
 

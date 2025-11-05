@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-# ruby "3.0.7"
 ruby "3.0.0"
+gem 'uri', '1.1.1'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.1.5", ">= 7.1.5.2"
@@ -48,7 +48,7 @@ gem "bootsnap", require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
+  # gem "debug", platforms: %i[ mri mswin mswin64 mingw x64_mingw ]
   gem 'rspec-rails'
   gem 'faker'
 end
@@ -73,7 +73,7 @@ end
 gem 'devise'
 gem 'devise-jwt'
 gem 'cancancan'
-gem 'byebug'
+# gem 'byebug'
 gem "kaminari", "~> 1.2"
 gem "chartkick"
 gem 'groupdate'
@@ -89,4 +89,7 @@ gem "letter_opener"
 gem 'letter_opener_web'
 
 gem 'dotenv-rails'
-gem 'tsort', "0.1.0"
+gem 'tsort', '0.2.0'
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
+# gem 'faraday-typhoeus'

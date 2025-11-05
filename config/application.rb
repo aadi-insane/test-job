@@ -27,5 +27,21 @@ module TestJob
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
     config.active_job.queue_adapter = :sidekiq
+
+    config.after_initialize do
+      if Rails.env.development? || Rails.env.test?
+        begin
+          # Project.__elasticsearch__.create_index! force: true
+          # Task.__elasticsearch__.create_index! force: true
+          # User.__elasticsearch__.create_index! force: true
+
+          # Project.import force: true
+          # Task.import force: true
+          # User.import force: true
+        rescue Faraday::ConnectionFailed => e
+          Rails.logger.warn "Elasticsearch connection failed: #{e.message}"
+        end
+      end
+    end
   end
 end

@@ -84,22 +84,30 @@ class ProjectsController < ApplicationController
       redirect_to projects_path and return
     end
 
-    if user_signed_in? && current_user.manager?
-      results =   Project.includes(:manager).where(manager_id: current_user.id)
-    elsif user_signed_in? && current_user.contributor?
-      results = Project.includes(:tasks, :manager).where(tasks: { contributor_id: current_user.id })
+    if query.present?
+      response = Project.search(query)
+      logger.info "Elasticsearch results: #{response.results.total}"
+      # results = response.records
+      if user_signed_in? && current_user.manager?
+        results = response.records.includes(:manager).where(manager_id: current_user.id)
+      elsif user_signed_in? && current_user.contributor?
+        results = response.records.includes(:tasks, :manager).where(tasks: { contributor_id: current_user.id })
+      else
+        results = response.records
+      end
     else
-      results = Project.includes(:manager).all
+      if user_signed_in? && current_user.manager?
+        results = Project.includes(:manager).where(manager_id: current_user.id)
+      elsif user_signed_in? && current_user.contributor?
+        results = Project.includes(:tasks, :manager).where(tasks: { contributor_id: current_user.id })
+      else
+        results = Project.includes(:manager).all
+      end
     end
 
-    results = results.where("projects.title ILIKE ?", "%#{query}%") unless query.empty?
     results = results.where(status: status) unless status.empty? || status == "All Status"
-    results = results.page(params[:page]).per(10)
 
-    flash.now[:notice] = "'#{results.total_count}' results found." if results.exists?
-    flash.now[:alert] = "No results found." unless results.exists?
-
-    @results = results
+    @projects = results
     render :search_project
   end
 

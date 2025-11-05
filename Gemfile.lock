@@ -93,7 +93,6 @@ GEM
     bullet (8.1.0)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
-    byebug (11.1.3)
     cancancan (3.6.1)
     capybara (3.40.0)
       addressable
@@ -113,10 +112,7 @@ GEM
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
     crass (1.0.6)
-    date (3.4.1)
-    debug (1.11.0)
-      irb (~> 1.10)
-      reline (>= 0.3.8)
+    date (3.5.0)
     devise (4.9.4)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
@@ -142,18 +138,37 @@ GEM
       concurrent-ruby (~> 1.0)
       logger
       zeitwerk (~> 2.6)
+    elastic-transport (8.4.1)
+      faraday (< 3)
+      multi_json
+    elasticsearch (8.19.2)
+      elastic-transport (~> 8.3)
+      elasticsearch-api (= 8.19.2)
+    elasticsearch-api (8.19.2)
+      multi_json
+    elasticsearch-model (8.0.1)
+      activesupport (> 3)
+      elasticsearch (~> 8)
+      hashie
+    elasticsearch-rails (8.0.1)
     erb (4.0.4)
       cgi (>= 0.3.3)
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
-    factory_bot (6.5.5)
+    factory_bot (6.5.6)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.0)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
     faker (3.5.2)
       i18n (>= 1.8.11, < 2)
+    faraday (2.14.0)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-net_http (3.4.1)
+      net-http (>= 0.5.0)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -161,6 +176,7 @@ GEM
       activesupport (>= 6.1)
     groupdate (6.4.0)
       activesupport (>= 6.1)
+    hashie (5.0.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     importmap-rails (2.0.3)
@@ -168,13 +184,14 @@ GEM
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
     io-console (0.8.1)
-    irb (1.15.2)
+    irb (1.15.3)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
+    json (2.15.2)
     jwt (3.1.2)
       base64
     kaminari (1.2.2)
@@ -215,7 +232,10 @@ GEM
     mini_mime (1.1.5)
     minitest (5.26.0)
     msgpack (1.8.0)
+    multi_json (1.17.0)
     mutex_m (0.3.0)
+    net-http (0.7.0)
+      uri
     net-imap (0.4.22)
       date
       net-protocol
@@ -225,7 +245,7 @@ GEM
       timeout
     net-smtp (0.5.1)
       net-protocol
-    nio4r (2.7.4)
+    nio4r (2.7.5)
     nokogiri (1.17.2-aarch64-linux)
       racc (~> 1.4)
     nokogiri (1.17.2-arm-linux)
@@ -252,7 +272,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.2.3)
+    rack (3.2.4)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -289,8 +309,8 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
-    rake (13.3.0)
-    rdoc (6.15.0)
+    rake (13.3.1)
+    rdoc (6.15.1)
       erb
       psych (>= 4.0.0)
       tsort
@@ -310,7 +330,7 @@ GEM
     rspec-expectations (3.13.5)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.6)
+    rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
     rspec-rails (7.1.1)
@@ -360,14 +380,15 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.7)
     thor (1.4.0)
-    timeout (0.4.3)
-    tsort (0.1.0)
+    timeout (0.4.4)
+    tsort (0.2.0)
     turbo-rails (2.0.12)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     uniform_notifier (1.18.0)
+    uri (1.1.1)
     warden (1.2.9)
       rack (>= 2.0.9)
     warden-jwt_auth (0.12.0)
@@ -401,14 +422,14 @@ DEPENDENCIES
   aasm
   bootsnap
   bullet
-  byebug
   cancancan
   capybara
   chartkick
-  debug
   devise
   devise-jwt
   dotenv-rails
+  elasticsearch-model
+  elasticsearch-rails
   factory_bot_rails
   faker
   groupdate
@@ -429,9 +450,10 @@ DEPENDENCIES
   sidekiq-unique-jobs
   sprockets-rails
   stimulus-rails
-  tsort (= 0.1.0)
+  tsort (= 0.2.0)
   turbo-rails
   tzinfo-data
+  uri (= 1.1.1)
   web-console
 
 RUBY VERSION

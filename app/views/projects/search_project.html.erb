@@ -1,6 +1,6 @@
 <h1 class="mb-4"><u>Search Results</u></h1>
 
-<% if @results.blank? %>
+<% if @projects.blank? %>
     <h3 class="text-center">No Matching Results</h3>
 <% else %>
 
@@ -18,7 +18,7 @@
       </thead>
 
       <tbody>
-        <% @results.each do |project| %>
+        <% @projects.each do |project| %>
           <tr>
             <th scope="row" class="text-center"><%= project.id %></th>
             <td  class="text-center"><%= project.title %></td>
@@ -36,7 +36,7 @@
 
   
   <% else %>
-      <% @results.each do |project| %>
+      <% @projects.each do |project| %>
         <div class="mb-4">
           <h4><%= project.title %></h4>
           <p>
@@ -78,6 +78,4 @@
 
 <% end %>
 <div class="d-flex justify-content-center">
-  <%# <%= paginate @results, theme: 'bootstrap4' %>
-
 </div>

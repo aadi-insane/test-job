@@ -5,8 +5,8 @@ class TasksController < ApplicationController
 
   def index
     if current_user.contributor?
-      # @tasks = Task.includes(:user_as_contributor).where(users: {id: current_user.id})
-      tasks = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
+      # tasks = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
+      tasks = Task.where(contributor_id: current_user.id, project_id: params[:project_id])
     elsif current_user.manager?
       # byebug
       tasks = Task.includes(:project, :user_as_contributor).where(projects: { id: params[:project_id], manager_id: current_user.id })
@@ -128,6 +128,37 @@ class TasksController < ApplicationController
     else
       render json: { error: 'Invalid state transition' }, status: :unprocessable_content
     end
+  end
+
+  def search_task
+    query = params[:query].to_s.strip
+    status = params[:status].to_s.strip
+
+    if query.empty? && (status.empty? || status == "All Status")
+      flash[:alert] = "Please enter a search query or select a status."
+      redirect_to project_tasks_path(@project) and return
+    end
+
+    if query.present?
+      results = Task.search(query).records
+    else
+      if current_user.contributor?
+        results = Task.includes(:user_as_contributor).where(contributor_id: current_user.id, project_id: params[:project_id])
+      elsif current_user.manager?
+        results = Task.includes(:project, :user_as_contributor).where(projects: { id: params[:project_id], manager_id: current_user.id })
+      else
+        results = Task.includes(:project).where(projects: { id: params[:project_id] })
+      end
+    end
+
+    results = results.where(status: status) unless status.empty? || status == "All Status"
+    results = results.page(params[:page]).per(10)
+
+    flash.now[:notice] = "'#{results.total_count}' results found." if results.exists?
+    flash.now[:alert] = "No results found." unless results.exists?
+
+    @tasks = results
+    render :index
   end
 
   private

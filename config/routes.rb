@@ -28,22 +28,33 @@ Rails.application.routes.draw do
       member do
         patch :update_status
       end
+      collection do
+        get :search_task
+      end
     end
   end
 
-  # resources :tasks, only: [:index, :show]
+  resources :users do
+    collection do
+      get :search_user
+    end
+  end
+
   resources :tasks, only: [:index, :show] do
-    post 'add_dependency', to: 'task_dependencies#create'
+    post :add_dependency, to: 'task_dependencies#create'
   end
 
   get '/search', to: 'projects#search_project', as: :search_project
-  # post "project_descriptions", to: "projects#generate_project_description", as: :project_descriptions
 
-  authenticate :user, lambda { |u| u.admin? } do
-    mount Sidekiq::Web => '/sidekiq'
-  end
+  # Admin-only routes for /tasks
+  # authenticate :user, lambda { |u| u.admin? } do
+  #   resources :tasks
+  # end
 
   if Rails.env.development?
-    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+      authenticate :user, lambda { |u| u.admin? } do
+        mount Sidekiq::Web => '/sidekiq'
+        mount LetterOpenerWeb::Engine, at: "/letter_opener"
+      end
   end
 end

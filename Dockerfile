@@ -14,7 +14,6 @@ WORKDIR /rails
 
 # Set production environment
 ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development test"
 
@@ -23,19 +22,19 @@ FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && apt-get install --no-install-recommends -y \
-    build-essential git libpq-dev libvips pkg-config && \
+    build-essential git libpq-dev libvips pkg-config libcurl4-openssl-dev && \
     gem install bundler -v "~> 2.3"
 
 # Install application gems
-COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+COPY Gemfile ./
+RUN rm -f Gemfile.lock && bundle install && \
     rm -rf ~/.bundle "${BUNDLE_PATH}/ruby/*/cache"
-    	
+
 # Copy application code
 COPY . .
 
 # RUN bundle exec bootsnap precompile app/ lib/
-# RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 # Final stage for app image

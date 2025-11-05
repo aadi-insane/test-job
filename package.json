@@ -2,5 +2,8 @@
   "dependencies": {
     "chart.js": "^4.5.0",
     "chartkick": "^5.0.1"
+  },
+  "scripts": {
+    "build": "echo 'No build needed'"
   }
 }

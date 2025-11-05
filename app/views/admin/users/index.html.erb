@@ -2,17 +2,28 @@
 
 <div class="mb-4">
   <%= form_with url: admin_users_path, method: :get, local: true, class: "form-inline row g-2 align-items-center" do %>
+    <!-- Search Input -->
+    <div class="col-auto">
+      <label for="query" class="form-label fw-bold mb-0 me-2">Search:</label>
+    </div>
+    <div class="col-auto">
+      <%= text_field_tag :query, params[:query], placeholder: "Name, email, or role", class: "form-control" %>
+    </div>
+
+    <!-- Role Filter -->
     <div class="col-auto">
       <label for="role" class="form-label fw-bold mb-0 me-2">Filter by Role:</label>
     </div>
     <div class="col-auto">
       <%= select_tag :role, 
           options_for_select(
-            [["All Roles", ""], ["Admin", "admin"], ["Manager", "manager"], ["Contributor", "contributor"]],
+            [["All Roles", ""], ["Manager", "manager"], ["Contributor", "contributor"]],
             params[:role]
           ), 
           class: "form-select" %>
     </div>
+
+    <!-- Buttons -->
     <div class="col-auto">
       <%= submit_tag "Filter", class: "btn btn-primary" %>
       <%= link_to "Reset", admin_users_path, class: "btn btn-secondary" %>
@@ -23,20 +34,24 @@
 <table class="table table-hover table-bordered">
   <thead class="table-primary">
     <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Name</th>
-      <th>Email</th>
-      <th>Role</th>
+      <th scope="col" class="text-center">ID</th>
+      <th scope="col" class="text-center">Name</th>
+      <th class="text-center">Email</th>
+      <th class="text-center">Role</th>
+      <th colspan="2" class="text-center">Action</th>
     </tr>
   </thead>
 
   <tbody>
     <% @users.each do |user| %>
-      <tr>
-        <th scope="row"><%= user.id %></th>
-        <td><%= user.name || "N/A" %></td>
-        <td><%= user.email %></td>
-        <td><%= user.role.humanize %></td>
+      <% row_class = user.role == 'manager' ? 'bg-warning' : 'bg-info' %>
+      <tr class="<%= row_class %>">
+        <th scope="row" class="text-center"><%= user.id %></th>
+        <td class="text-center"><%= user.name || "N/A" %></td>
+        <td class="text-center"><%= user.email %></td>
+        <td class="text-center"><%= user.role.humanize %></td>
+        <td class="text-center"><%= link_to "Show", admin_user_path(user), class: "btn btn-success" %></td>
+        <td class="text-center"><%= link_to "Edit Role", edit_admin_user_path(user), class: "btn btn-success" %></td>
       </tr>
     <% end %>
   </tbody>

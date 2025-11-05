@@ -4,7 +4,7 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV['POSTGRES_HOST']%>
+  host: <%= ENV['POSTGRES_HOST'] || 'localhost' %>
   port: 5432
 
 development:
@@ -12,12 +12,14 @@ development:
   database: test_job_development
   username: rails
   password: password
+  host: localhost
  
 test:
   <<: *default
   database: test_job_test
   username: rails
   password: password
+  host: localhost
 
 production:
   <<: *default

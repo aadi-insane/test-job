@@ -91,7 +91,7 @@ RSpec.describe "Tasks", type: :request do
       it "updates task status successfully" do
         patch project_task_path(project, task), params: { task: { status: 'in_progress' } }
         expect(response).to redirect_to(project_task_path(project, task))
-        expect(flash[:notice]).to eq("Task status updated successfully!")
+        expect(flash[:notice]).to eq("Task \"#{task.title}\" Updated Successfully!")
         expect(task.reload.status).to eq('in_progress')
       end
     end

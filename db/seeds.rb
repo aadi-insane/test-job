@@ -96,21 +96,25 @@ managers.each_with_index do |manager, manager_idx|
     # Each project gets 5 tasks
     5.times do |task_idx|
       task_count += 1
-      
+
       contributor = contributors[contributor_index % contributors.length]
       contributor_index += 1
-      
+
       initial_status = ["not_started", "in_progress"].sample
-      
+
+      # Random due date within the next 10 days
+      due_date = rand(1..10).days.from_now
+
       task = Task.create!(
         title: "Task #{task_count} - #{project.title}",
         description: "This is task #{task_count} for project #{project.title}. Assigned to #{contributor.name}.",
         project_id: project.id,
         contributor_id: contributor.id,
-        status: initial_status
+        status: initial_status,
+        due_date: due_date
       )
-      
-      puts "    ✓ Task #{task_count}: #{task.title} (Status: #{initial_status}, Assigned to: #{contributor.name})"
+
+      puts "    ✓ Task #{task_count}: #{task.title} (Status: #{initial_status}, Assigned to: #{contributor.name}, Due: #{due_date.strftime('%Y-%m-%d')})"
     end
   end
 end

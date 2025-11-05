@@ -37,4 +37,4 @@
 /public/assets
 
 description.md
-db/seeds.rb
+# db/seeds.rb

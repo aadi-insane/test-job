@@ -4,5 +4,5 @@ import "controllers"
 import "@popperjs/core"
 import "bootstrap"
 import "chartkick"
-import "Chart.bundle"
-import "chartkick/chart.js"
+import Chart from "Chart.js"
+window.Chart = Chart;

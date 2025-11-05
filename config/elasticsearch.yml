@@ -1,0 +1,6 @@
+development:
+  host: localhost:9200
+  log: true
+test:
+  host: localhost:9200
+  log: false

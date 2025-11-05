@@ -12,10 +12,9 @@ class DependencyResolutionWorker
       incomplete_prerequisites = dep_task.prerequisite_tasks.where(status: ['not_started', 'in_progress'])
 
       if incomplete_prerequisites.exists?
-        # byebug
         dep_task.update(status: 'blocked')
       else
-        dep_task.update(status: 'completed')
+        dep_task.update(status: 'in_progress')
 
         DependencyMailer.unblock_notification(dep_task.user_as_contributor, completed_task, dep_task).deliver_now
       end

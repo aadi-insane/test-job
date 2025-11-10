@@ -86,7 +86,7 @@ class ProjectsController < ApplicationController
 
     if query.present?
       response = Project.search(query)
-      logger.info "Elasticsearch results: #{response.results.total}"
+      # logger.info "Elasticsearch results: #{response.results.total}"
       # results = response.records
       if user_signed_in? && current_user.manager?
         results = response.records.includes(:manager).where(manager_id: current_user.id)

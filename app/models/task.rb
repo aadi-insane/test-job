@@ -1,33 +1,9 @@
 class Task < ApplicationRecord
   include AASM
-  include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
+  
+  include Searchable
 
-  # --- Elasticsearch index configuration ---
-  settings index: {
-    number_of_shards: 1,
-    analysis: {
-      filter: {
-        autocomplete_filter: {
-          type: "edge_ngram",
-          min_gram: 2,
-          max_gram: 20
-        }
-      },
-      analyzer: {
-        autocomplete: {
-          type: "custom",
-          tokenizer: "standard",
-          filter: ["lowercase", "autocomplete_filter"]
-        },
-        autocomplete_search: {
-          type: "custom",
-          tokenizer: "standard",
-          filter: ["lowercase"]
-        }
-      }
-    }
-  } do
+  settings do
     mappings dynamic: false do
       indexes :title,       type: :text, analyzer: :autocomplete, search_analyzer: :autocomplete_search
       indexes :description, type: :text, analyzer: :autocomplete, search_analyzer: :autocomplete_search

@@ -1,11 +1,10 @@
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
-  include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
-
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
+
+  include Searchable
 
   # --- Normalization ---
   normalizes :name, with: ->(value) { value.split.map(&:capitalize).join(' ') }
@@ -21,30 +20,7 @@ class User < ApplicationRecord
   validates_presence_of :role, :name
 
   # --- Elasticsearch configuration ---
-  settings index: {
-    number_of_shards: 1,
-    analysis: {
-      filter: {
-        autocomplete_filter: {
-          type: "edge_ngram",
-          min_gram: 2,
-          max_gram: 20
-        }
-      },
-      analyzer: {
-        autocomplete: {
-          type: "custom",
-          tokenizer: "standard",
-          filter: ["lowercase", "autocomplete_filter"]
-        },
-        autocomplete_search: {
-          type: "custom",
-          tokenizer: "standard",
-          filter: ["lowercase"]
-        }
-      }
-    }
-  } do
+  settings do
     mappings dynamic: false do
       indexes :name,   type: :text, analyzer: :autocomplete, search_analyzer: :autocomplete_search
       indexes :email,  type: :text, analyzer: :autocomplete, search_analyzer: :autocomplete_search
@@ -58,30 +34,8 @@ class User < ApplicationRecord
     as_json(only: %i[name email role status])
   end
 
-  # --- Search method ---
   def self.search(query)
-    return all if query.blank?
-
-    __elasticsearch__.search({
-      query: {
-        bool: {
-          should: [
-            {
-              multi_match: {
-                query: query,
-                fields: ['name^3', 'email', 'role', 'status'],
-                fuzziness: 'AUTO'
-              }
-            },
-            {
-              wildcard: {
-                name: { value: "*#{query.downcase}*" }
-              }
-            }
-          ]
-        }
-      }
-    })
+    super(query, ['name^3', 'email', 'role', 'status'])
   end
 
   # --- JWT Payload ---
